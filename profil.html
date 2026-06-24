@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>HealthPulse — Profil</title>
+    <title>HealthPulse — Misi & Keluhan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
@@ -36,10 +36,10 @@
         html, body {
             height: 100%;
             overflow: hidden;
+            background: linear-gradient(160deg, #EEF2FF 0%, #F8FAFC 100%);
         }
 
         body {
-            background: linear-gradient(160deg, #EEF2FF 0%, #F8FAFC 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -67,6 +67,7 @@
             padding: 16px 16px 90px 16px;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 95px;
         }
 
         .page-content::-webkit-scrollbar {
@@ -75,6 +76,21 @@
         .page-content::-webkit-scrollbar-thumb {
             background: #CBD5E1;
             border-radius: 10px;
+        }
+
+        .page {
+            display: none;
+            min-height: 100%;
+            padding-bottom: 10px;
+        }
+        .page.active-page {
+            display: block;
+            animation: slideUp 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         /* ----- BOTTOM NAV ----- */
@@ -89,7 +105,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 6px 6px 16px 6px;
+            padding: 6px 6px max(16px, env(safe-area-inset-bottom));
             border-top: 1px solid rgba(203, 213, 225, 0.3);
             z-index: 100;
             box-shadow: 0 -4px 30px rgba(0,0,0,0.04);
@@ -114,6 +130,7 @@
             position: relative;
             text-decoration: none;
             z-index: 101;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .nav-item i {
@@ -156,169 +173,428 @@
 
         .nav-item:active { transform: scale(0.92); }
 
-        /* ----- HEADER PROFIL ----- */
-        .profile-header {
-            background: var(--white);
+        /* ----- HEADER ----- */
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 2px;
+            flex-shrink: 0;
+        }
+
+        .greeting {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+        .greeting span {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .avatar-icon:active { transform: scale(0.92); }
+
+        /* ----- SCORE BANNER ----- */
+        .score-banner {
+            background: var(--primary-gradient);
             border-radius: var(--radius);
-            padding: 24px 20px 20px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 20px;
-            text-align: center;
-            border: 1px solid rgba(203, 213, 225, 0.08);
+            padding: 22px 24px;
+            color: white;
+            margin-bottom: 18px;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            flex-shrink: 0;
         }
-        .profile-header::before {
+        .score-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+        .score-banner::after {
+            content: '✦';
+            position: absolute;
+            right: 16px;
+            top: 14px;
+            font-size: 28px;
+            opacity: 0.15;
+        }
+        .score-banner .label {
+            font-size: 12px;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        .score-banner .value {
+            font-size: 40px;
+            font-weight: 900;
+            line-height: 1;
+            margin: 4px 0 3px;
+            letter-spacing: -1px;
+        }
+        .score-banner .sub {
+            font-size: 12px;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ----- QUICK GRID ----- */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 12px 0 16px;
+            flex-shrink: 0;
+        }
+        .quick-item {
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            padding: 10px 4px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid rgba(203, 213, 225, 0.15);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            text-decoration: none;
+        }
+        .quick-item i {
+            font-size: 18px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 3px;
+        }
+        .quick-item span {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: block;
+            line-height: 1.2;
+        }
+        .quick-item:active {
+            transform: scale(0.94);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ----- SECTION TITLE ----- */
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 14px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        /* ----- MISI / GOAL CARD ----- */
+        .mission-slider {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 6px 2px 14px 2px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #CBD5E1 transparent;
+            flex-shrink: 0;
+        }
+        .mission-slider::-webkit-scrollbar {
+            height: 3px;
+        }
+        .mission-slider::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 20px;
+        }
+
+        .mission-card {
+            flex: 0 0 180px;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            padding: 14px 14px 12px 14px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(203, 213, 225, 0.12);
+            scroll-snap-align: start;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mission-card::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: var(--primary-gradient);
+            opacity: 0.25;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
         }
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
+        .mission-card:active { transform: scale(0.97); }
+
+        .mission-card .goal-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-            font-size: 34px;
-            font-weight: 700;
-            color: white;
-            box-shadow: 0 8px 30px rgba(79, 70, 229, 0.25);
-            transition: var(--transition);
+            gap: 8px;
+            margin-bottom: 3px;
         }
-        .profile-name {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--text);
-            letter-spacing: -0.3px;
-        }
-        .profile-email {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-        .profile-badge {
-            display: inline-block;
+        .mission-card .goal-icon {
+            width: 26px;
+            height: 26px;
             background: var(--primary-light);
-            color: var(--primary);
-            font-size: 10px;
-            font-weight: 600;
-            padding: 4px 14px;
-            border-radius: 40px;
-            margin-top: 8px;
-        }
-
-        /* ----- STATS CARD ----- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .stat-item {
-            background: var(--white);
-            border-radius: var(--radius-sm);
-            padding: 14px 8px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(203, 213, 225, 0.06);
-            transition: var(--transition);
-        }
-        .stat-item:active { transform: scale(0.96); }
-        .stat-item .num {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--text);
-            letter-spacing: -0.5px;
-        }
-        .stat-item .label {
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-            font-weight: 500;
-        }
-        .stat-item .icon {
-            font-size: 16px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
-        }
-
-        /* ----- MENU LIST ----- */
-        .menu-section {
-            background: var(--white);
-            border-radius: var(--radius);
-            padding: 6px 0;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(203, 213, 225, 0.06);
-            margin-bottom: 16px;
-            overflow: hidden;
-        }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 14px 18px;
-            gap: 14px;
-            border-bottom: 1px solid #F1F5F9;
-            transition: var(--transition);
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text);
-        }
-        .menu-item:last-child { border-bottom: none; }
-        .menu-item:active { background: #F8FAFC; }
-        .menu-item .menu-icon {
-            width: 36px;
-            height: 36px;
             border-radius: 50%;
-            background: var(--primary-light);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary);
-            font-size: 14px;
+            font-size: 11px;
             flex-shrink: 0;
         }
-        .menu-item .menu-text {
-            flex: 1;
-            font-weight: 500;
-            font-size: 14px;
+        .mission-card .goal-text {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text);
+            line-height: 1.2;
         }
-        .menu-item .menu-arrow {
-            color: var(--text-light);
-            font-size: 14px;
+        .mission-card .goal-desc {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin: 2px 0 10px 0;
+            line-height: 1.3;
+            padding-left: 34px;
         }
 
-        /* ----- LOGOUT BUTTON ----- */
-        .logout-btn {
-            width: 100%;
-            background: #FEF2F2;
-            color: #EF4444;
+        .mission-card .status-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2px;
+            padding-left: 34px;
+        }
+
+        .mission-card .done-btn {
+            background: var(--primary-light);
+            color: var(--primary);
             border: none;
-            padding: 14px;
-            border-radius: var(--radius-sm);
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 10px;
             font-weight: 600;
-            font-size: 15px;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 8px;
-            border: 1px solid rgba(239, 68, 68, 0.12);
+            gap: 4px;
+            box-shadow: 0 1px 4px rgba(79, 70, 229, 0.06);
+            -webkit-tap-highlight-color: transparent;
         }
-        .logout-btn:active { transform: scale(0.97); background: #FEE2E2; }
+        .mission-card .done-btn i {
+            font-size: 10px;
+        }
+        .mission-card .done-btn:active {
+            transform: scale(0.92);
+        }
+        .mission-card .done-btn.completed {
+            background: #10B981;
+            color: white;
+            pointer-events: none;
+            opacity: 0.85;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+        }
 
-        /* ----- LOADING OVERLAY ----- */
+        .mission-card .status-badge {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-light);
+            background: #F1F5F9;
+            padding: 2px 10px;
+            border-radius: 40px;
+            letter-spacing: 0.2px;
+        }
+        .mission-card .status-badge.done {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        /* ----- KELUHAN SLIDER ----- */
+        .complaint-slider {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 6px 2px 14px 2px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #CBD5E1 transparent;
+            flex-shrink: 0;
+        }
+        .complaint-slider::-webkit-scrollbar {
+            height: 3px;
+        }
+        .complaint-slider::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 20px;
+        }
+
+        .complaint-card {
+            flex: 0 0 160px;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            padding: 14px 12px 12px 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(203, 213, 225, 0.12);
+            scroll-snap-align: start;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            position: relative;
+            min-height: 110px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .complaint-card:active {
+            transform: scale(0.96);
+            box-shadow: var(--shadow-md);
+        }
+        .complaint-card .top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .complaint-card .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .complaint-card .title {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text);
+            line-height: 1.2;
+        }
+        .complaint-card .sub {
+            font-size: 10px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+            margin-left: 40px;
+            margin-top: -2px;
+        }
+        .complaint-card .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #CBD5E1;
+            transition: var(--transition);
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .complaint-card .status-dot.active {
+            background: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+        .complaint-card .status-dot.solved {
+            background: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Saran box */
+        .saran-box {
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            margin: 12px 0 8px 0;
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .saran-box .label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .saran-box .saran-text {
+            font-size: 13px;
+            color: var(--text);
+            margin-top: 4px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* Page placeholders */
+        .page-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+        }
+        .page-placeholder i {
+            font-size: 56px;
+            color: var(--primary-light);
+            margin-bottom: 16px;
+        }
+        .page-placeholder h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .page-placeholder p {
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        /* Loading overlay */
         .loading-overlay {
             display: none;
             position: fixed;
@@ -354,20 +630,92 @@
             color: var(--text-secondary);
         }
 
-        /* ----- VERSION ----- */
-        .version-text {
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-light);
-            margin-top: 12px;
-            padding-bottom: 8px;
-            letter-spacing: 0.3px;
+        /* Tombol Logout */
+        .logout-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 16px;
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.25);
+            transition: var(--transition);
+            width: 100%;
+            max-width: 200px;
+        }
+        .logout-btn:active {
+            transform: scale(0.95);
+        }
+        .logout-btn i {
+            margin-right: 8px;
         }
 
         /* Responsive */
         @media (max-width: 380px) {
-            .profile-avatar { width: 64px; height: 64px; font-size: 28px; }
-            .stat-item .num { font-size: 18px; }
+            .mission-card {
+                flex: 0 0 150px;
+                min-height: 100px;
+            }
+            .complaint-card {
+                flex: 0 0 140px;
+                min-height: 90px;
+            }
+            .quick-item i {
+                font-size: 16px;
+            }
+            .quick-item span {
+                font-size: 9px;
+            }
+            .greeting {
+                font-size: 17px;
+            }
+            .score-banner .value {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .mission-card {
+                flex: 0 0 130px;
+                min-height: 90px;
+                padding: 10px;
+            }
+            .complaint-card {
+                flex: 0 0 120px;
+                min-height: 80px;
+                padding: 10px;
+            }
+            .quick-grid {
+                gap: 5px;
+            }
+            .quick-item {
+                padding: 8px 2px;
+            }
+            .score-banner {
+                padding: 16px 18px;
+            }
+            .score-banner .value {
+                font-size: 28px;
+            }
+        }
+
+        @media (min-height: 800px) {
+            .page-content {
+                padding-bottom: 100px;
+            }
+        }
+
+        /* Safe area support untuk notch phones */
+        @supports (padding: max(0px)) {
+            .bottom-nav {
+                padding-bottom: max(16px, env(safe-area-inset-bottom));
+            }
+            .page-content {
+                padding-bottom: max(90px, calc(env(safe-area-inset-bottom) + 70px));
+            }
         }
     </style>
 </head>
@@ -376,95 +724,111 @@
 <!-- Loading Overlay -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
-    <div class="loading-text">Memuat profil...</div>
+    <div class="loading-text">Memuat...</div>
 </div>
 
 <div class="phone-frame">
     <div class="page-content">
 
-        <!-- PROFIL PAGE -->
-        <div id="profilPage" class="page active-page" style="display:flex; flex-direction:column;">
-            
-            <!-- Header Profil -->
-            <div class="profile-header">
-                <div class="profile-avatar" id="profileAvatar">P</div>
-                <div class="profile-name" id="profileName">Pengguna</div>
-                <div class="profile-email" id="profileEmail">email@example.com</div>
-                <div class="profile-badge"><i class="fas fa-shield-alt"></i> Terverifikasi</div>
+        <!-- HOME -->
+        <div id="homePage" class="page active-page">
+            <div class="header-flex">
+                <div class="greeting">Halo, <span id="userName">Pengguna</span></div>
+                <button class="avatar-icon" id="avatarBtn"><i class="fas fa-user"></i></button>
             </div>
 
-            <!-- Statistik -->
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="icon"><i class="fas fa-flag-checkered"></i></div>
-                    <div class="num" id="statMisi">0</div>
-                    <div class="label">Misi Selesai</div>
-                </div>
-                <div class="stat-item">
-                    <div class="icon"><i class="fas fa-heart"></i></div>
-                    <div class="num" id="statSkor">0</div>
-                    <div class="label">Skor Kesehatan</div>
-                </div>
-                <div class="stat-item">
-                    <div class="icon"><i class="fas fa-calendar-day"></i></div>
-                    <div class="num" id="statHari">0</div>
-                    <div class="label">Hari Aktif</div>
-                </div>
+            <div class="score-banner" id="scoreBanner">
+                <div class="label">SKOR KESEHATAN</div>
+                <div class="value" id="healthScore">0</div>
+                <div class="sub"><i class="fas fa-arrow-up" style="font-size:10px;"></i> <span id="scoreDelta">+2 Dapatkan poin dari misi kesehatan </span></div>
             </div>
 
-            <!-- Menu -->
-            <div class="menu-section">
-                <a href="#" class="menu-item" id="editProfileBtn">
-                    <div class="menu-icon"><i class="fas fa-pen"></i></div>
-                    <span class="menu-text">Edit Profil</span>
-                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
-                </a>
-                <a href="#" class="menu-item">
-                    <div class="menu-icon"><i class="fas fa-bell"></i></div>
-                    <span class="menu-text">Notifikasi</span>
-                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
-                </a>
-                <a href="#" class="menu-item">
-                    <div class="menu-icon"><i class="fas fa-lock"></i></div>
-                    <span class="menu-text">Keamanan & Privasi</span>
-                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
-                </a>
-                <a href="#" class="menu-item">
-                    <div class="menu-icon"><i class="fas fa-question-circle"></i></div>
-                    <span class="menu-text">Bantuan</span>
-                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
-                </a>
-                <a href="#" class="menu-item">
-                    <div class="menu-icon"><i class="fas fa-info-circle"></i></div>
-                    <span class="menu-text">Tentang Aplikasi</span>
-                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
-                </a>
+            <div class="quick-grid">
+                <button class="quick-item" onclick="switchPage('homePage')">
+                    <i class="fas fa-apple-alt"></i>
+                    <span>Nutrisi</span>
+                </button>
+                <button class="quick-item" onclick="switchPage('homePage')">
+                    <i class="fas fa-walking"></i>
+                    <span>Aktivitas</span>
+                </button>
+                <button class="quick-item" onclick="switchPage('diagnosisPage')">
+                    <i class="fas fa-stethoscope"></i>
+                    <span>Diagnosis</span>
+                </button>
+                <button class="quick-item" onclick="switchPage('trackingPage')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Tracking</span>
+                </button>
             </div>
 
-            <!-- Logout -->
-            <button class="logout-btn" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Keluar
-            </button>
+            <!-- MISI -->
+            <div class="section-title"><i class="fas fa-flag-checkered"></i> Misi Hidup Sehat Hari Ini</div>
+            <div class="mission-slider" id="missionSlider"></div>
 
-            <div class="version-text">HealthPulse v2.1.0</div>
+            <!-- KELUHAN -->
+            <div class="section-title" style="margin-top: 20px;"><i class="fas fa-heartbeat"></i> Kondisi & Keluhan Hari Ini</div>
+            <p style="font-size: 11px; color: var(--text-secondary); margin: -4px 0 10px 0;">Klik keluhan yang kamu rasakan, sistem akan kasih saran.</p>
+            <div class="complaint-slider" id="complaintSlider"></div>
+
+            <!-- SARAN -->
+            <div id="saranContainer">
+                <div class="saran-box" id="saranBox" style="display: none;">
+                    <div class="label"><i class="fas fa-lightbulb"></i> Saran untukmu</div>
+                    <div class="saran-text" id="saranText">Minum air hangat dan istirahat.</div>
+                </div>
+                <div id="defaultSaran" class="saran-box">
+                    <div class="label"><i class="fas fa-info-circle"></i> Cek keluhan</div>
+                    <div class="saran-text" style="color: var(--text-secondary);">Pilih salah satu keluhan di atas untuk mendapatkan saran.</div>
+                </div>
+            </div>
         </div>
 
+        <!-- TRACKING -->
+        <div id="trackingPage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-chart-line"></i>
+                <h3>Tracking Aktivitas</h3>
+                <p>Data langkah, kalori, dan tidur akan muncul di sini.</p>
+            </div>
+        </div>
+
+        <!-- DIAGNOSIS -->
+        <div id="diagnosisPage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-notes-medical"></i>
+                <h3>Diagnosis Kesehatan</h3>
+                <p>Riwayat keluhan dan rekomendasi dari sistem.</p>
+            </div>
+        </div>
+
+        <!-- PROFIL -->
+        <div id="profilPage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-user-circle"></i>
+                <h3>Profil Anda</h3>
+                <div id="profileInfo" style="margin: 12px 0; line-height: 1.8;">Memuat data profil...</div>
+                <button class="logout-btn" onclick="logoutUser()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav">
-        <a href="home.html" class="nav-item" data-page="homePage">
+        <button class="nav-item active" data-page="homePage">
             <i class="fas fa-house"></i><span>Beranda</span>
-        </a>
-        <a href="tracking.html" class="nav-item" data-page="trackingPage">
+        </button>
+        <button class="nav-item" data-page="trackingPage">
             <i class="fas fa-chart-line"></i><span>Tracking</span>
-        </a>
-        <a href="diagnosis.html" class="nav-item" data-page="diagnosisPage">
+        </button>
+        <button class="nav-item" data-page="diagnosisPage">
             <i class="fas fa-comment-dots"></i><span>Poppin Ai</span>
-        </a>
-        <a href="profil.html" class="nav-item active" data-page="profilPage">
+        </button>
+        <button class="nav-item" data-page="profilPage">
             <i class="fas fa-user"></i><span>Profil</span>
-        </a>
+        </button>
     </div>
 </div>
 
@@ -487,7 +851,7 @@
         updateProfile
     } from "firebase/auth";
 
-    // Konfigurasi Firebase (sama dengan login)
+    // Konfigurasi Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyA3a3O3_khcx66HwD7hfhSwRrknliFbKMw",
         authDomain: "healtcare-d4e63.firebaseapp.com",
@@ -498,19 +862,16 @@
         measurementId: "G-FKED8092XB"
     };
 
+    // Inisialisasi Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
     // DOM Elements
+    const userNameEl = document.getElementById('userName');
+    const profileInfoEl = document.getElementById('profileInfo');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const profileAvatar = document.getElementById('profileAvatar');
-    const profileName = document.getElementById('profileName');
-    const profileEmail = document.getElementById('profileEmail');
-    const statMisi = document.getElementById('statMisi');
-    const statSkor = document.getElementById('statSkor');
-    const statHari = document.getElementById('statHari');
-    const logoutBtn = document.getElementById('logoutBtn');
 
+    // --- 1. CEK STATUS LOGIN ---
     function showLoading(show) {
         if (show) {
             loadingOverlay.classList.add('show');
@@ -519,42 +880,31 @@
         }
     }
 
-    // --- CEK STATUS LOGIN ---
     onAuthStateChanged(auth, (user) => {
         showLoading(false);
         
         if (user) {
-            // Ambil data user
+            // User sudah login
             const displayName = user.displayName || user.email?.split('@')[0] || 'Pengguna';
             const email = user.email || 'Email tidak tersedia';
-            const initial = displayName.charAt(0).toUpperCase();
-
-            // Update profil
-            profileAvatar.textContent = initial;
-            profileName.textContent = displayName;
-            profileEmail.textContent = email;
-
-            // Ambil data misi dari localStorage (jika ada)
-            try {
-                const savedMissions = JSON.parse(localStorage.getItem('healthMissions') || '[]');
-                const doneMissions = savedMissions.filter(m => m.done).length;
-                statMisi.textContent = doneMissions;
-            } catch (e) {
-                statMisi.textContent = '0';
+            
+            // Update nama di greeting
+            userNameEl.textContent = displayName;
+            
+            // Update profil di halaman profil
+            if (profileInfoEl) {
+                profileInfoEl.innerHTML = `
+                    <strong>Nama:</strong> ${displayName}<br>
+                    <strong>Email:</strong> ${email}<br>
+                    <strong>UID:</strong> ${user.uid.substring(0, 12)}...
+                `;
             }
 
-            // Ambil skor dari localStorage atau default
-            const savedScore = localStorage.getItem('healthScore');
-            statSkor.textContent = savedScore || '0';
-
-            // Hitung hari aktif (simulasi)
-            const startDate = localStorage.getItem('healthStartDate');
-            if (startDate) {
-                const days = Math.floor((Date.now() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24));
-                statHari.textContent = days > 0 ? days : '1';
-            } else {
-                localStorage.setItem('healthStartDate', new Date().toISOString());
-                statHari.textContent = '1';
+            // Update avatar dengan inisial nama
+            const avatarBtn = document.getElementById('avatarBtn');
+            if (avatarBtn) {
+                const initial = displayName.charAt(0).toUpperCase();
+                avatarBtn.innerHTML = `<span style="font-size:18px;font-weight:700;">${initial}</span>`;
             }
 
         } else {
@@ -563,60 +913,170 @@
         }
     });
 
-    // --- FUNGSI LOGOUT ---
-    async function handleLogout() {
+    // --- 2. FUNGSI LOGOUT (dengan prevent back) ---
+    window.logoutUser = async function() {
         showLoading(true);
         try {
             await signOut(auth);
-            window.location.href = 'index.html';
+            // Hapus history agar tidak bisa back
+            window.location.replace('login.html');
         } catch (error) {
             console.error('Logout error:', error);
             showLoading(false);
             alert('Gagal logout. Silakan coba lagi.');
         }
+    };
+
+    // --- 3. DATA & RENDER ---
+    const missionData = [
+        { id: 1, icon: 'fa-water', text: 'Minum 8 Gelas', desc: 'Cukupi cairan hari ini', done: false },
+        { id: 2, icon: 'fa-walking', text: 'Jalan 10.000 Langkah', desc: 'Aktivitas fisik harian', done: false },
+        { id: 3, icon: 'fa-carrot', text: 'Makan Sayur & Buah', desc: 'Serat untuk pencernaan', done: false },
+        { id: 4, icon: 'fa-moon', text: 'Tidur 7-8 Jam', desc: 'Istirahat yang cukup', done: false }
+    ];
+
+    const complaintData = [
+        { id: 1, icon: 'fa-head-side-cough', title: 'Batuk & Pilek', sub: 'Bersin, hidung tersumbat', status: 'active', saran: 'Perbanyak minum air hangat, konsumsi vitamin C, dan istirahat yang cukup. Jika demam tinggi, segera konsultasi ke dokter.' },
+        { id: 2, icon: 'fas fa-face-dizzy', title: 'Sakit Kepala', sub: 'Ringan di bagian depan', status: 'active', saran: 'Istirahatkan mata, kurangi paparan layar, dan kompres dahi dengan air dingin. Hindari kafein berlebihan.' },
+        { id: 3, icon: 'fa-bolt', title: 'Mudah Lelah', sub: 'Kurang energi', status: 'active', saran: 'Coba tidur lebih awal dan konsumsi makanan kaya zat besi. Jangan lupa olahraga ringan untuk meningkatkan stamina.' },
+        { id: 4, icon: 'fa-apple-alt', title: 'Pencernaan', sub: 'Perut terasa tidak nyaman', status: 'solved', saran: 'Hindari makanan berminyak dan pedas. Perbanyak serat dari sayuran dan minum probiotik.' }
+    ];
+
+    // Render Misi
+    const missionSlider = document.getElementById('missionSlider');
+    function renderMissions() {
+        missionSlider.innerHTML = '';
+        missionData.forEach((mission, index) => {
+            const card = document.createElement('div');
+            card.className = 'mission-card';
+            card.innerHTML = `
+                <div>
+                    <div class="goal-header">
+                        <div class="goal-icon"><i class="fas ${mission.icon}"></i></div>
+                        <div class="goal-text">${mission.text}</div>
+                    </div>
+                    <div class="goal-desc">${mission.desc}</div>
+                </div>
+                <div class="status-area">
+                    <button class="done-btn ${mission.done ? 'completed' : ''}" data-index="${index}">
+                        <i class="fas ${mission.done ? 'fa-check-circle' : 'fa-circle-check'}"></i>
+                        ${mission.done ? 'Selesai' : 'Selesai'}
+                    </button>
+                    <span class="status-badge ${mission.done ? 'done' : ''}">${mission.done ? '✔️' : '⏳'}</span>
+                </div>
+            `;
+            missionSlider.appendChild(card);
+        });
+    }
+    renderMissions();
+
+    // Render Keluhan
+    const complaintSlider = document.getElementById('complaintSlider');
+    function renderComplaints() {
+        complaintSlider.innerHTML = '';
+        complaintData.forEach((comp) => {
+            const card = document.createElement('div');
+            card.className = 'complaint-card';
+            card.dataset.id = comp.id;
+            card.innerHTML = `
+                <div class="top">
+                    <div class="icon"><i class="fas ${comp.icon}"></i></div>
+                    <div class="title">${comp.title}</div>
+                    <div class="status-dot ${comp.status === 'active' ? 'active' : comp.status === 'solved' ? 'solved' : ''}"></div>
+                </div>
+                <div class="sub">${comp.sub}</div>
+            `;
+            complaintSlider.appendChild(card);
+        });
+    }
+    renderComplaints();
+
+    // --- 4. NAVIGASI (Single Page App) ---
+    // Fungsi global untuk switch page
+    window.switchPage = function(pageId) {
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        pages.forEach(p => p.classList.remove('active-page'));
+        const target = document.getElementById(pageId);
+        if (target) target.classList.add('active-page');
+        
+        navItems.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.page === pageId) btn.classList.add('active');
+        });
+        
+        // Scroll ke atas
+        document.querySelector('.page-content').scrollTop = 0;
+    };
+
+    // Event listener untuk bottom nav
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const pageId = this.dataset.page;
+            if (pageId) window.switchPage(pageId);
+        });
+    });
+
+    // Avatar button ke profil
+    document.getElementById('avatarBtn').addEventListener('click', function() {
+        window.switchPage('profilPage');
+    });
+
+    // --- 5. INTERAKSI MISI ---
+    missionSlider.addEventListener('click', (e) => {
+        const btn = e.target.closest('.done-btn');
+        if (!btn || btn.classList.contains('completed')) return;
+        const index = parseInt(btn.dataset.index);
+        missionData[index].done = true;
+        btn.classList.add('completed');
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Selesai';
+        const badge = btn.closest('.mission-card').querySelector('.status-badge');
+        badge.classList.add('done');
+        badge.textContent = '✔️';
+        updateScore();
+    });
+
+    function updateScore() {
+        const total = missionData.length;
+        const done = missionData.filter(m => m.done).length;
+        const scoreEl = document.getElementById('healthScore');
+        let score = 86 + (done * 2);
+        if (score > 100) score = 100;
+        scoreEl.textContent = score;
+        const deltaEl = document.getElementById('scoreDelta');
+        if (done > 0) {
+            deltaEl.textContent = `+${done * 2} poin dari menyelesaikan misi`;
+        } else {
+            deltaEl.textContent = '+4 poin dari minggu lalu';
+        }
     }
 
-    logoutBtn.addEventListener('click', handleLogout);
+    // --- 6. INTERAKSI KELUHAN ---
+    complaintSlider.addEventListener('click', (e) => {
+        const card = e.target.closest('.complaint-card');
+        if (!card) return;
+        const id = parseInt(card.dataset.id);
+        const complaint = complaintData.find(c => c.id === id);
+        if (!complaint) return;
 
-    // --- EDIT PROFIL (simulasi) ---
-    document.getElementById('editProfileBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        const user = auth.currentUser;
-        if (!user) return;
+        const saranBox = document.getElementById('saranBox');
+        const saranText = document.getElementById('saranText');
+        const defaultSaran = document.getElementById('defaultSaran');
 
-        const newName = prompt('Masukkan nama baru:', user.displayName || '');
-        if (newName && newName.trim() !== '') {
-            showLoading(true);
-            updateProfile(user, { displayName: newName.trim() })
-                .then(() => {
-                    profileName.textContent = newName.trim();
-                    profileAvatar.textContent = newName.trim().charAt(0).toUpperCase();
-                    showLoading(false);
-                    alert('Nama berhasil diperbarui!');
-                })
-                .catch((error) => {
-                    showLoading(false);
-                    alert('Gagal update nama: ' + error.message);
-                });
-        }
+        saranText.textContent = complaint.saran;
+        saranBox.style.display = 'block';
+        defaultSaran.style.display = 'none';
+
+        document.querySelectorAll('.complaint-card').forEach(c => c.style.borderColor = 'transparent');
+        card.style.borderColor = 'var(--primary)';
+        card.style.borderWidth = '2px';
     });
 
-    // --- SIMPAN DATA KE LOCALSTORAGE SAAT PERUBAHAN ---
-    // (dipanggil dari halaman utama jika ada perubahan misi)
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'healthMissions') {
-            try {
-                const missions = JSON.parse(e.newValue || '[]');
-                const done = missions.filter(m => m.done).length;
-                statMisi.textContent = done;
-            } catch (e) {}
-        }
-        if (e.key === 'healthScore') {
-            statSkor.textContent = e.newValue || '86';
-        }
-    });
+    // Inisialisasi skor awal
+    updateScore();
 
-    console.log('✅ HealthPulse Profil siap!');
+    console.log('✅ HealthPulse siap dengan Firebase Authentication dan Single Page App!');
 </script>
 </body>
-</html>
+</html>v
