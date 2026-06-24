@@ -274,6 +274,12 @@
             gap: 8px;
         }
 
+        .input-grid-full {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
         .input-group {
             display: flex;
             flex-direction: column;
@@ -318,6 +324,30 @@
             font-size: 7px;
             color: var(--text-light);
             margin-top: 1px;
+        }
+
+        /* Profile summary */
+        .profile-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .profile-pill {
+            padding: 3px 10px;
+            border-radius: 40px;
+            font-size: 9px;
+            font-weight: 500;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .profile-pill i {
+            font-size: 9px;
         }
 
         /* Button */
@@ -538,6 +568,10 @@
             .tracking-card {
                 padding: 12px 10px;
             }
+            .profile-pill {
+                font-size: 8px;
+                padding: 2px 8px;
+            }
         }
     </style>
 </head>
@@ -565,7 +599,47 @@
                     </div>
                 </div>
 
-                <!-- Input Form -->
+                <!-- Data Diri -->
+                <div class="tracking-card">
+                    <div class="card-title">
+                        <i class="fas fa-user"></i>
+                        Data Diri
+                        <span class="badge-count" id="profileBadge">Profil</span>
+                    </div>
+                    <div class="input-grid-full">
+                        <div class="input-group">
+                            <label>Nama Lengkap</label>
+                            <input type="text" id="nama" placeholder="Masukkan nama Anda" />
+                        </div>
+                    </div>
+                    <div class="input-grid" style="margin-top:6px;">
+                        <div class="input-group">
+                            <label>Usia <span style="font-weight:400;color:var(--text-light);">(tahun)</span></label>
+                            <input type="number" id="usia" placeholder="25" step="1" min="1" max="120" />
+                        </div>
+                        <div class="input-group">
+                            <label>Jenis Kelamin</label>
+                            <select id="jenisKelamin" style="padding:7px 10px;border:2px solid #E2E8F0;border-radius:var(--radius-sm);font-size:12px;font-weight:500;outline:none;background:var(--bg);width:100%;-webkit-appearance:none;appearance:none;transition:var(--transition);">
+                                <option value="">Pilih</option>
+                                <option value="Pria">Pria</option>
+                                <option value="Wanita">Wanita</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Tinggi Badan <span style="font-weight:400;color:var(--text-light);">(cm)</span></label>
+                            <input type="number" id="tinggi" placeholder="170" step="0.1" min="50" max="250" />
+                        </div>
+                        <div class="input-group">
+                            <label>Berat Badan <span style="font-weight:400;color:var(--text-light);">(kg)</span></label>
+                            <input type="number" id="berat" placeholder="65" step="0.1" min="10" max="300" />
+                        </div>
+                    </div>
+                    <div class="profile-summary" id="profileSummary">
+                        <!-- Dinamis dari JS -->
+                    </div>
+                </div>
+
+                <!-- Input Form Pemeriksaan -->
                 <div class="tracking-card">
                     <div class="card-title">
                         <i class="fas fa-flask"></i>
@@ -654,7 +728,7 @@
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav">
-        <a href="index.html" class="nav-item" data-page="homePage">
+        <a href="home.html" class="nav-item" data-page="homePage">
             <i class="fas fa-house"></i><span>Beranda</span>
         </a>
         <a href="tracking.html" class="nav-item active" data-page="trackingPage">
@@ -694,6 +768,57 @@
     ];
 
     let isGenerating = false;
+
+    // ============================================================
+    // PROFILE SUMMARY
+    // ============================================================
+    function updateProfileSummary() {
+        const summary = document.getElementById('profileSummary');
+        const nama = document.getElementById('nama').value.trim();
+        const usia = document.getElementById('usia').value;
+        const tinggi = document.getElementById('tinggi').value;
+        const berat = document.getElementById('berat').value;
+        const jk = document.getElementById('jenisKelamin').value;
+
+        let pills = [];
+
+        if (nama) {
+            pills.push(`<span class="profile-pill"><i class="fas fa-user"></i> ${nama}</span>`);
+        }
+        if (usia && !isNaN(usia) && usia > 0) {
+            pills.push(`<span class="profile-pill"><i class="fas fa-calendar"></i> ${usia} th</span>`);
+        }
+        if (jk) {
+            pills.push(`<span class="profile-pill"><i class="fas fa-venus-mars"></i> ${jk}</span>`);
+        }
+        if (tinggi && !isNaN(tinggi) && tinggi > 0) {
+            pills.push(`<span class="profile-pill"><i class="fas fa-ruler-vertical"></i> ${tinggi} cm</span>`);
+        }
+        if (berat && !isNaN(berat) && berat > 0) {
+            pills.push(`<span class="profile-pill"><i class="fas fa-weight-scale"></i> ${berat} kg</span>`);
+            
+            // Hitung BMI jika tinggi juga ada
+            if (tinggi && !isNaN(tinggi) && tinggi > 0) {
+                const tinggiM = tinggi / 100;
+                const bmi = berat / (tinggiM * tinggiM);
+                if (bmi > 0 && bmi < 50) {
+                    let status = '';
+                    let color = '';
+                    if (bmi < 18.5) { status = 'Kurus'; color = 'var(--warning)'; }
+                    else if (bmi < 25) { status = 'Normal'; color = 'var(--success)'; }
+                    else if (bmi < 30) { status = 'Gemuk'; color = 'var(--warning)'; }
+                    else { status = 'Obesitas'; color = 'var(--danger)'; }
+                    pills.push(`<span class="profile-pill" style="background:#F1F5F9;color:${color};"><i class="fas fa-calculator"></i> BMI: ${bmi.toFixed(1)} (${status})</span>`);
+                }
+            }
+        }
+
+        if (pills.length === 0) {
+            summary.innerHTML = '<span style="font-size:11px;color:var(--text-light);">Isi data diri untuk melengkapi profil</span>';
+        } else {
+            summary.innerHTML = pills.join('');
+        }
+    }
 
     // ============================================================
     // STATUS SUMMARY
@@ -776,6 +901,13 @@
             return;
         }
 
+        // Ambil data diri
+        const nama = document.getElementById('nama').value.trim() || 'Pasien';
+        const usia = document.getElementById('usia').value || 'tidak diketahui';
+        const jk = document.getElementById('jenisKelamin').value || 'tidak diketahui';
+        const tinggi = document.getElementById('tinggi').value || 'tidak diketahui';
+        const berat = document.getElementById('berat').value || 'tidak diketahui';
+
         isGenerating = true;
         const btn = document.getElementById('generateBtn');
         btn.disabled = true;
@@ -790,7 +922,6 @@
             </div>
         `;
 
-        // Scroll ke hasil
         document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         try {
@@ -801,13 +932,20 @@
 
             const prompt = `Anda adalah Poppin AI, asisten kesehatan profesional yang ramah dan hangat.
 
-Data pemeriksaan pasien:
+Data pasien:
+Nama: ${nama}
+Usia: ${usia} tahun
+Jenis Kelamin: ${jk}
+Tinggi: ${tinggi} cm
+Berat: ${berat} kg
+
+Data pemeriksaan:
 ${dataStr}
 
 Berdasarkan data di atas, berikan rekomendasi kesehatan yang lengkap dengan format:
 
 **Rekomendasi Makanan:**
-• Makanan yang DIANJURKAN (sebutkan minimal 3)
+• Makanan yang DIANJURKAN (sebutkan minimal 4)
 • Makanan yang DILARANG (sebutkan minimal 3)
 
 **Aktivitas Fisik:**
@@ -817,7 +955,7 @@ Berdasarkan data di atas, berikan rekomendasi kesehatan yang lengkap dengan form
 **Kebiasaan Baik:**
 • Sebutkan 4 kebiasaan baik yang harus dilakukan
 
-**Kesimpulan:** (ringkasan singkat)
+**Kesimpulan:** (ringkasan singkat khusus untuk pasien)
 
 Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan penjelasan singkat untuk setiap poin. Jangan gunakan asterisk (*) atau markdown berlebihan, gunakan format teks biasa dengan bullet points (•).`;
 
@@ -927,7 +1065,7 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
                     }
                 ],
                 temperature: 0.7,
-                max_tokens: 800,
+                max_tokens: 900,
                 top_p: 0.9,
                 stream: false
             })
@@ -949,10 +1087,16 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
         examData.forEach(item => {
             document.getElementById(item.key).value = '';
         });
+        document.getElementById('nama').value = '';
+        document.getElementById('usia').value = '';
+        document.getElementById('jenisKelamin').value = '';
+        document.getElementById('tinggi').value = '';
+        document.getElementById('berat').value = '';
         document.getElementById('recommendationResult').className = 'recommendation-result';
         document.getElementById('recommendationResult').innerHTML = '';
         renderDefaultHabits(document.getElementById('habitsContainer'));
         updateStatusSummary();
+        updateProfileSummary();
         
         const btn = document.getElementById('generateBtn');
         btn.disabled = false;
@@ -974,7 +1118,6 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
             btn.classList.remove('active');
             if (btn.dataset.page === pageId) btn.classList.add('active');
         });
-        // Reset scroll saat pindah halaman
         document.querySelector('.page-content').scrollTop = 0;
     }
 
@@ -998,10 +1141,16 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
     switchPage(targetPage);
 
     // ============================================================
-    // AUTO-UPDATE STATUS
+    // AUTO-UPDATE
     // ============================================================
     examData.forEach(item => {
         document.getElementById(item.key).addEventListener('input', updateStatusSummary);
+    });
+
+    // Auto-update profile
+    ['nama', 'usia', 'jenisKelamin', 'tinggi', 'berat'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateProfileSummary);
+        document.getElementById(id).addEventListener('change', updateProfileSummary);
     });
 
     // ============================================================
@@ -1009,9 +1158,11 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
     // ============================================================
     renderDefaultHabits(document.getElementById('habitsContainer'));
     updateStatusSummary();
+    updateProfileSummary();
 
     console.log('📊 Tracking HealthPulse siap!');
     console.log('🤖 Model: llama-3.1-8b-instant');
+    console.log('👤 Data diri telah ditambahkan');
 </script>
 </body>
 </html>
