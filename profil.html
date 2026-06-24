@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>HealthPulse — Profil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #EEF2FF;
+            --primary-dark: #4338CA;
+            --primary-gradient: linear-gradient(135deg, #4F46E5, #7C3AED);
+            --bg: #F8FAFC;
+            --white: #FFFFFF;
+            --text: #0F172A;
+            --text-secondary: #64748B;
+            --text-light: #94A3B8;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 20px rgba(79, 70, 229, 0.12);
+            --shadow-lg: 0 12px 40px rgba(79, 70, 229, 0.18);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-full: 50px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(160deg, #EEF2FF 0%, #F8FAFC 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phone-frame {
+            max-width: 400px;
+            width: 100%;
+            height: 100vh;
+            max-height: 860px;
+            background: var(--bg);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.08);
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px 16px 90px 16px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .page-content::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+
+        /* ----- BOTTOM NAV ----- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 6px 16px 6px;
+            border-top: 1px solid rgba(203, 213, 225, 0.3);
+            z-index: 100;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.04);
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 6px 0 3px 0;
+            background: transparent;
+            border: none;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            position: relative;
+            text-decoration: none;
+            z-index: 101;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active i {
+            color: var(--primary);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        .nav-item.active span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .nav-item:active { transform: scale(0.92); }
+
+        /* ----- HEADER PROFIL ----- */
+        .profile-header {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 24px 20px 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid rgba(203, 213, 225, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 34px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 8px 30px rgba(79, 70, 229, 0.25);
+            transition: var(--transition);
+        }
+        .profile-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .profile-email {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .profile-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 40px;
+            margin-top: 8px;
+        }
+
+        /* ----- STATS CARD ----- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            padding: 14px 8px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(203, 213, 225, 0.06);
+            transition: var(--transition);
+        }
+        .stat-item:active { transform: scale(0.96); }
+        .stat-item .num {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+        .stat-item .label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+        .stat-item .icon {
+            font-size: 16px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        /* ----- MENU LIST ----- */
+        .menu-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 6px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(203, 213, 225, 0.06);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            gap: 14px;
+            border-bottom: 1px solid #F1F5F9;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background: #F8FAFC; }
+        .menu-item .menu-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .menu-item .menu-text {
+            flex: 1;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .menu-item .menu-arrow {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        /* ----- LOGOUT BUTTON ----- */
+        .logout-btn {
+            width: 100%;
+            background: #FEF2F2;
+            color: #EF4444;
+            border: none;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+            border: 1px solid rgba(239, 68, 68, 0.12);
+        }
+        .logout-btn:active { transform: scale(0.97); background: #FEE2E2; }
+
+        /* ----- LOADING OVERLAY ----- */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .loading-overlay.show {
+            display: flex;
+        }
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--primary-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* ----- VERSION ----- */
+        .version-text {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 12px;
+            padding-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 380px) {
+            .profile-avatar { width: 64px; height: 64px; font-size: 28px; }
+            .stat-item .num { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Memuat profil...</div>
+</div>
+
+<div class="phone-frame">
+    <div class="page-content">
+
+        <!-- PROFIL PAGE -->
+        <div id="profilPage" class="page active-page" style="display:flex; flex-direction:column;">
+            
+            <!-- Header Profil -->
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">P</div>
+                <div class="profile-name" id="profileName">Pengguna</div>
+                <div class="profile-email" id="profileEmail">email@example.com</div>
+                <div class="profile-badge"><i class="fas fa-shield-alt"></i> Terverifikasi</div>
+            </div>
+
+            <!-- Statistik -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="icon"><i class="fas fa-flag-checkered"></i></div>
+                    <div class="num" id="statMisi">0</div>
+                    <div class="label">Misi Selesai</div>
+                </div>
+                <div class="stat-item">
+                    <div class="icon"><i class="fas fa-heart"></i></div>
+                    <div class="num" id="statSkor">86</div>
+                    <div class="label">Skor Kesehatan</div>
+                </div>
+                <div class="stat-item">
+                    <div class="icon"><i class="fas fa-calendar-day"></i></div>
+                    <div class="num" id="statHari">0</div>
+                    <div class="label">Hari Aktif</div>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <div class="menu-section">
+                <a href="#" class="menu-item" id="editProfileBtn">
+                    <div class="menu-icon"><i class="fas fa-pen"></i></div>
+                    <span class="menu-text">Edit Profil</span>
+                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
+                </a>
+                <a href="#" class="menu-item">
+                    <div class="menu-icon"><i class="fas fa-bell"></i></div>
+                    <span class="menu-text">Notifikasi</span>
+                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
+                </a>
+                <a href="#" class="menu-item">
+                    <div class="menu-icon"><i class="fas fa-lock"></i></div>
+                    <span class="menu-text">Keamanan & Privasi</span>
+                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
+                </a>
+                <a href="#" class="menu-item">
+                    <div class="menu-icon"><i class="fas fa-question-circle"></i></div>
+                    <span class="menu-text">Bantuan</span>
+                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
+                </a>
+                <a href="#" class="menu-item">
+                    <div class="menu-icon"><i class="fas fa-info-circle"></i></div>
+                    <span class="menu-text">Tentang Aplikasi</span>
+                    <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
+                </a>
+            </div>
+
+            <!-- Logout -->
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Keluar
+            </button>
+
+            <div class="version-text">HealthPulse v2.1.0</div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item" data-page="homePage">
+            <i class="fas fa-house"></i><span>Beranda</span>
+        </a>
+        <a href="tracking.html" class="nav-item" data-page="trackingPage">
+            <i class="fas fa-chart-line"></i><span>Tracking</span>
+        </a>
+        <a href="diagnosis.html" class="nav-item" data-page="diagnosisPage">
+            <i class="fas fa-stethoscope"></i><span>Diagnosis</span>
+        </a>
+        <a href="profil.html" class="nav-item active" data-page="profilPage">
+            <i class="fas fa-user"></i><span>Profil</span>
+        </a>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js"
+        }
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "firebase/app";
+    import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+        updateProfile
+    } from "firebase/auth";
+
+    // Konfigurasi Firebase (sama dengan login)
+    const firebaseConfig = {
+        apiKey: "AIzaSyA3a3O3_khcx66HwD7hfhSwRrknliFbKMw",
+        authDomain: "healtcare-d4e63.firebaseapp.com",
+        projectId: "healtcare-d4e63",
+        storageBucket: "healtcare-d4e63.firebasestorage.app",
+        messagingSenderId: "1044472132716",
+        appId: "1:1044472132716:web:09f3ab5fc5650e01709449",
+        measurementId: "G-FKED8092XB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // DOM Elements
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const statMisi = document.getElementById('statMisi');
+    const statSkor = document.getElementById('statSkor');
+    const statHari = document.getElementById('statHari');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function showLoading(show) {
+        if (show) {
+            loadingOverlay.classList.add('show');
+        } else {
+            loadingOverlay.classList.remove('show');
+        }
+    }
+
+    // --- CEK STATUS LOGIN ---
+    onAuthStateChanged(auth, (user) => {
+        showLoading(false);
+        
+        if (user) {
+            // Ambil data user
+            const displayName = user.displayName || user.email?.split('@')[0] || 'Pengguna';
+            const email = user.email || 'Email tidak tersedia';
+            const initial = displayName.charAt(0).toUpperCase();
+
+            // Update profil
+            profileAvatar.textContent = initial;
+            profileName.textContent = displayName;
+            profileEmail.textContent = email;
+
+            // Ambil data misi dari localStorage (jika ada)
+            try {
+                const savedMissions = JSON.parse(localStorage.getItem('healthMissions') || '[]');
+                const doneMissions = savedMissions.filter(m => m.done).length;
+                statMisi.textContent = doneMissions;
+            } catch (e) {
+                statMisi.textContent = '0';
+            }
+
+            // Ambil skor dari localStorage atau default
+            const savedScore = localStorage.getItem('healthScore');
+            statSkor.textContent = savedScore || '86';
+
+            // Hitung hari aktif (simulasi)
+            const startDate = localStorage.getItem('healthStartDate');
+            if (startDate) {
+                const days = Math.floor((Date.now() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24));
+                statHari.textContent = days > 0 ? days : '1';
+            } else {
+                localStorage.setItem('healthStartDate', new Date().toISOString());
+                statHari.textContent = '1';
+            }
+
+        } else {
+            // Tidak login, redirect ke login
+            window.location.href = 'login.html';
+        }
+    });
+
+    // --- FUNGSI LOGOUT ---
+    async function handleLogout() {
+        showLoading(true);
+        try {
+            await signOut(auth);
+            window.location.href = 'login.html';
+        } catch (error) {
+            console.error('Logout error:', error);
+            showLoading(false);
+            alert('Gagal logout. Silakan coba lagi.');
+        }
+    }
+
+    logoutBtn.addEventListener('click', handleLogout);
+
+    // --- EDIT PROFIL (simulasi) ---
+    document.getElementById('editProfileBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const newName = prompt('Masukkan nama baru:', user.displayName || '');
+        if (newName && newName.trim() !== '') {
+            showLoading(true);
+            updateProfile(user, { displayName: newName.trim() })
+                .then(() => {
+                    profileName.textContent = newName.trim();
+                    profileAvatar.textContent = newName.trim().charAt(0).toUpperCase();
+                    showLoading(false);
+                    alert('Nama berhasil diperbarui!');
+                })
+                .catch((error) => {
+                    showLoading(false);
+                    alert('Gagal update nama: ' + error.message);
+                });
+        }
+    });
+
+    // --- SIMPAN DATA KE LOCALSTORAGE SAAT PERUBAHAN ---
+    // (dipanggil dari halaman utama jika ada perubahan misi)
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'healthMissions') {
+            try {
+                const missions = JSON.parse(e.newValue || '[]');
+                const done = missions.filter(m => m.done).length;
+                statMisi.textContent = done;
+            } catch (e) {}
+        }
+        if (e.key === 'healthScore') {
+            statSkor.textContent = e.newValue || '86';
+        }
+    });
+
+    console.log('✅ HealthPulse Profil siap!');
+</script>
+</body>
+</html>
