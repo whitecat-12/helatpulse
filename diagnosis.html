@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>HealthPulse — Poppin AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #EEF2FF;
+            --primary-dark: #4338CA;
+            --primary-gradient: linear-gradient(135deg, #4F46E5, #7C3AED);
+            --bg: #F8FAFC;
+            --white: #FFFFFF;
+            --text: #0F172A;
+            --text-secondary: #64748B;
+            --text-light: #94A3B8;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 20px rgba(79, 70, 229, 0.12);
+            --shadow-lg: 0 12px 40px rgba(79, 70, 229, 0.18);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-full: 50px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(160deg, #EEF2FF 0%, #F8FAFC 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phone-frame {
+            max-width: 400px;
+            width: 100%;
+            height: 100vh;
+            max-height: 860px;
+            background: var(--bg);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.08);
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px 16px 90px 16px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .page-content::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+
+        .page {
+            display: none;
+            height: 100%;
+            min-height: 100%;
+        }
+        .page.active-page {
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ----- BOTTOM NAV ----- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 6px 16px 6px;
+            border-top: 1px solid rgba(203, 213, 225, 0.3);
+            z-index: 100;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.04);
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 6px 0 3px 0;
+            background: transparent;
+            border: none;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            position: relative;
+            text-decoration: none;
+            z-index: 101;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active i {
+            color: var(--primary);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        .nav-item.active span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .nav-item:active { transform: scale(0.92); }
+
+        /* ----- HEADER ----- */
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 2px;
+            flex-shrink: 0;
+        }
+
+        .greeting {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+        .greeting span {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .avatar-icon:active { transform: scale(0.92); }
+
+        /* ============================================================
+           CHAT FULL SCREEN
+           ============================================================ */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            padding-bottom: 4px;
+            position: relative;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 0 12px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 0;
+            max-height: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 3px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+
+        /* ===== STYLING CHAT BUBBLE ===== */
+        .chat-msg {
+            max-width: 88%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            animation: slideUp 0.3s ease;
+            word-wrap: break-word;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .chat-msg.user {
+            align-self: flex-end;
+            background: var(--primary-gradient);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .chat-msg.ai {
+            align-self: flex-start;
+            background: var(--white);
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--primary);
+        }
+
+        .chat-msg.ai strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .chat-msg.ai ul, 
+        .chat-msg.ai ol {
+            padding-left: 20px;
+            margin: 6px 0 4px 0;
+        }
+
+        .chat-msg.ai li {
+            margin-bottom: 3px;
+            list-style-type: disc;
+        }
+
+        .chat-msg.ai .section-title {
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: block;
+            margin-top: 6px;
+        }
+
+        .chat-msg .msg-time {
+            font-size: 9px;
+            opacity: 0.5;
+            margin-top: 6px;
+            display: block;
+            letter-spacing: 0.3px;
+        }
+
+        .chat-msg.user .msg-time {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .chat-msg.ai .msg-time {
+            color: var(--text-light);
+        }
+
+        .chat-msg .msg-typing {
+            display: inline-flex;
+            gap: 5px;
+            padding: 6px 0;
+        }
+
+        .chat-msg .msg-typing span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .chat-msg .msg-typing span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .chat-msg .msg-typing span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        /* ===== CHAT INPUT - FIX ===== */
+        .chat-input-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: var(--white);
+            border-radius: var(--radius-full);
+            padding: 4px 4px 4px 18px;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid #E2E8F0;
+            transition: var(--transition);
+            margin-top: 8px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+        }
+
+        .chat-input-wrapper input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            padding: 10px 0;
+            background: transparent;
+            color: var(--text);
+            min-width: 0;
+            height: 42px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .chat-input-wrapper input::placeholder {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .chat-input-wrapper input:focus {
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        .chat-input-wrapper .send-btn {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 11;
+        }
+
+        .chat-input-wrapper .send-btn:active {
+            transform: scale(0.88);
+        }
+
+        .chat-input-wrapper .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== QUICK ACTION BUTTONS ===== */
+        .quick-chat-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 8px 0 4px 0;
+            flex-shrink: 0;
+        }
+
+        .quick-chat-btn {
+            padding: 5px 14px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 40px;
+            background: var(--white);
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .quick-chat-btn i {
+            font-size: 10px;
+        }
+
+        .quick-chat-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .quick-chat-btn:active {
+            transform: scale(0.94);
+        }
+
+        /* ============================================================
+           PEMERIKSAAN HARIAN
+           ============================================================ */
+        .exam-nav {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 4px 0 12px 0;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex-shrink: 0;
+        }
+
+        .exam-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .exam-nav-item {
+            flex: 0 0 auto;
+            padding: 6px 16px;
+            border-radius: 40px;
+            background: var(--white);
+            border: 1.5px solid #E2E8F0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .exam-nav-item:active {
+            transform: scale(0.94);
+        }
+
+        .exam-nav-item.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .exam-nav-item .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .exam-nav-item .dot.normal { background: var(--success); }
+        .exam-nav-item .dot.warning { background: var(--warning); }
+        .exam-nav-item .dot.danger { background: var(--danger); }
+        .exam-nav-item .dot.empty { background: #CBD5E1; }
+
+        .exam-status-badge {
+            font-size: 8px;
+            padding: 1px 8px;
+            border-radius: 40px;
+            font-weight: 600;
+            margin-left: 2px;
+        }
+
+        .exam-status-badge.normal { background: #D1FAE5; color: #065F46; }
+        .exam-status-badge.warning { background: #FEF3C7; color: #92400E; }
+        .exam-status-badge.danger { background: #FEE2E2; color: #991B1B; }
+        .exam-status-badge.empty { background: #F1F5F9; color: var(--text-light); }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            max-width: 340px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-box h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .modal-box .modal-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .modal-box .modal-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            outline: none;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .modal-box .modal-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+        }
+
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .modal-box .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-box .modal-actions button:active {
+            transform: scale(0.94);
+        }
+
+        .modal-box .modal-actions .btn-cancel {
+            background: #F1F5F9;
+            color: var(--text-secondary);
+        }
+
+        .modal-box .modal-actions .btn-save {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .modal-box .modal-normal {
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* ===== PAGE PLACEHOLDER ===== */
+        .page-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        .page-placeholder i {
+            font-size: 56px;
+            color: var(--primary-light);
+            margin-bottom: 16px;
+        }
+        .page-placeholder h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .page-placeholder p {
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 380px) {
+            .exam-nav-item {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .chat-msg {
+                font-size: 12px;
+                padding: 10px 14px;
+                max-width: 92%;
+            }
+            .quick-chat-btn {
+                font-size: 9px;
+                padding: 4px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="phone-frame">
+    <div class="page-content">
+
+        <!-- DIAGNOSIS PAGE (Chat Full Screen) -->
+        <div id="diagnosisPage" class="page active-page">
+            <div class="header-flex">
+                <div class="greeting">🧠 <span>Poppin AI</span></div>
+                <div class="avatar-icon" onclick="clearChat()"><i class="fas fa-broom"></i></div>
+            </div>
+
+            <!-- EXAM NAV (Pemeriksaan Harian di navbar) -->
+            <div class="exam-nav" id="examNav">
+                <!-- Dinamis dari JS -->
+            </div>
+
+            <!-- CHAT FULL SCREEN -->
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-msg ai">
+                        👋 Halo! Saya <strong>Poppin AI</strong>, asisten kesehatan Anda.<br>
+                        Klik pemeriksaan di atas untuk input nilai, atau tanyakan langsung!
+                        <span class="msg-time">Sekarang</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-chat-actions">
+                    <button class="quick-chat-btn" onclick="quickAsk('Bagaimana cara menurunkan kolesterol?')">
+                        <i class="fas fa-heart"></i> Kolesterol
+                    </button>
+                    <button class="quick-chat-btn" onclick="quickAsk('Tips menjaga tekanan darah normal?')">
+                        <i class="fas fa-heart-pulse"></i> Tekanan Darah
+                    </button>
+                    <button class="quick-chat-btn" onclick="quickAsk('Cara menurunkan berat badan sehat?')">
+                        <i class="fas fa-weight-scale"></i> Berat Badan
+                    </button>
+                    <button class="quick-chat-btn" onclick="quickAsk('Analisis kesehatan saya secara lengkap')">
+                        <i class="fas fa-stethoscope"></i> Analisis
+                    </button>
+                </div>
+
+                <!-- Chat Input - FIXED -->
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Tanyakan ke Poppin AI..." autocomplete="off" />
+                    <button class="send-btn" id="sendBtn" onclick="sendChat()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOME -->
+        <div id="homePage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-house"></i>
+                <h3>Beranda</h3>
+                <p>Kembali ke halaman utama</p>
+            </div>
+        </div>
+
+        <!-- TRACKING -->
+        <div id="trackingPage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-chart-line"></i>
+                <h3>Tracking Aktivitas</h3>
+                <p>Data langkah, kalori, dan tidur akan muncul di sini.</p>
+            </div>
+        </div>
+
+        <!-- PROFIL -->
+        <div id="profilPage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-user-circle"></i>
+                <h3>Profil Saya</h3>
+                <p>Nama: Andi<br>Usia: 28<br>Berat: 70 kg</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item" data-page="homePage">
+            <i class="fas fa-house"></i><span>Beranda</span>
+        </a>
+        <a href="tracking.html" class="nav-item" data-page="trackingPage">
+            <i class="fas fa-chart-line"></i><span>Tracking</span>
+        </a>
+        <a href="diagnosis.html" class="nav-item active" data-page="diagnosisPage">
+            <i class="fas fa-comment-dots"></i><span>Poppin AI</span>
+        </a>
+        <a href="profil.html" class="nav-item" data-page="profilPage">
+            <i class="fas fa-user"></i><span>Profil</span>
+        </a>
+    </div>
+</div>
+
+<!-- MODAL INPUT -->
+<div class="modal-overlay" id="inputModal">
+    <div class="modal-box">
+        <h3 id="modalTitle">Masukkan Nilai</h3>
+        <div class="modal-sub" id="modalSub">Tekanan Darah (mmHg)</div>
+        <input type="number" class="modal-input" id="modalInput" placeholder="Masukkan angka..." />
+        <div class="modal-normal" id="modalNormal">Normal: 120/80</div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Batal</button>
+            <button class="btn-save" onclick="saveModal()">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI GROQ AI
+    // ============================================================
+    const GROQ_API_KEY = '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';
+    const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+    // ============================================================
+    // DATA DIAGNOSIS
+    // ============================================================
+    const diagnosisData = [
+        { id: 'td', icon: 'fa-heart', title: 'Tekanan Darah', unit: 'mmHg', normal: '120/80', status: 'normal', value: null, lastCheck: null },
+        { id: 'kolesterol', icon: 'fa-droplet', title: 'Kolesterol', unit: 'mg/dL', normal: '<200', status: 'normal', value: null, lastCheck: null },
+        { id: 'gula', icon: 'fa-syringe', title: 'Gula Darah', unit: 'mg/dL', normal: '70-140', status: 'normal', value: null, lastCheck: null },
+        { id: 'asamurat', icon: 'fa-bone', title: 'Asam Urat', unit: 'mg/dL', normal: '2.4-6.0', status: 'normal', value: null, lastCheck: null },
+        { id: 'berat', icon: 'fa-weight-scale', title: 'Berat Badan', unit: 'kg', normal: '18.5-24.9 BMI', status: 'normal', value: null, lastCheck: null },
+        { id: 'spo2', icon: 'fa-lungs', title: 'SpO₂', unit: '%', normal: '95-100', status: 'normal', value: null, lastCheck: null },
+    ];
+
+    let diagnosisHistory = JSON.parse(localStorage.getItem('diagnosisHistory')) || [];
+    let modalTargetId = null;
+    let isProcessing = false;
+
+    // ============================================================
+    // RENDER EXAM NAV
+    // ============================================================
+    function renderExamNav() {
+        const nav = document.getElementById('examNav');
+        if (!nav) return;
+        nav.innerHTML = '';
+
+        diagnosisData.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'exam-nav-item';
+
+            const dot = document.createElement('span');
+            dot.className = `dot ${item.value !== null ? item.status : 'empty'}`;
+            btn.appendChild(dot);
+
+            const label = document.createElement('span');
+            label.textContent = item.title;
+            btn.appendChild(label);
+
+            if (item.value !== null) {
+                const badge = document.createElement('span');
+                badge.className = `exam-status-badge ${item.status}`;
+                badge.textContent = item.value;
+                btn.appendChild(badge);
+            }
+
+            btn.onclick = () => openModal(item);
+            nav.appendChild(btn);
+        });
+    }
+
+    // ============================================================
+    // MODAL
+    // ============================================================
+    function openModal(item) {
+        modalTargetId = item.id;
+        document.getElementById('modalTitle').textContent = `Masukkan ${item.title}`;
+        document.getElementById('modalSub').textContent = `${item.title} (${item.unit})`;
+        document.getElementById('modalNormal').textContent = `Normal: ${item.normal}`;
+        document.getElementById('modalInput').value = item.value !== null ? item.value : '';
+        document.getElementById('modalInput').focus();
+        document.getElementById('inputModal').classList.add('show');
+    }
+
+    function closeModal() {
+        document.getElementById('inputModal').classList.remove('show');
+        modalTargetId = null;
+    }
+
+    function saveModal() {
+        const input = document.getElementById('modalInput');
+        const value = parseFloat(input.value);
+        if (isNaN(value)) {
+            alert('Masukkan angka yang valid!');
+            return;
+        }
+
+        const item = diagnosisData.find(d => d.id === modalTargetId);
+        if (!item) return;
+
+        item.value = value;
+        item.lastCheck = new Date().toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        item.status = getStatus(item.id, value);
+
+        diagnosisHistory.push({
+            id: item.id,
+            title: item.title,
+            value: value,
+            unit: item.unit,
+            status: item.status,
+            date: item.lastCheck
+        });
+        localStorage.setItem('diagnosisHistory', JSON.stringify(diagnosisHistory));
+
+        closeModal();
+        renderExamNav();
+
+        addChatMessage('user', `📊 Saya periksa ${item.title}: ${value} ${item.unit}`);
+        analyzeSingle(item);
+    }
+
+    // ============================================================
+    // STATUS LOGIC
+    // ============================================================
+    function getStatus(id, value) {
+        switch(id) {
+            case 'td':
+                if (value < 120) return 'normal';
+                if (value < 140) return 'warning';
+                return 'danger';
+            case 'kolesterol':
+                if (value < 200) return 'normal';
+                if (value < 240) return 'warning';
+                return 'danger';
+            case 'gula':
+                if (value >= 70 && value <= 140) return 'normal';
+                if ((value >= 60 && value < 70) || (value > 140 && value <= 180)) return 'warning';
+                return 'danger';
+            case 'asamurat':
+                if (value >= 2.4 && value <= 6.0) return 'normal';
+                if ((value >= 2.0 && value < 2.4) || (value > 6.0 && value <= 7.5)) return 'warning';
+                return 'danger';
+            case 'berat':
+                const bmi = value / (1.7 * 1.7);
+                if (bmi >= 18.5 && bmi <= 24.9) return 'normal';
+                if ((bmi >= 17 && bmi < 18.5) || (bmi > 24.9 && bmi <= 29.9)) return 'warning';
+                return 'danger';
+            case 'spo2':
+                if (value >= 95) return 'normal';
+                if (value >= 90) return 'warning';
+                return 'danger';
+            default:
+                return 'normal';
+        }
+    }
+
+    // ============================================================
+    // CHAT FUNCTIONS
+    // ============================================================
+    function addChatMessage(type, content, isTyping = false) {
+        const container = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.className = `chat-msg ${type}`;
+
+        if (isTyping) {
+            div.innerHTML = `
+                <div class="msg-typing">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            div.id = 'typingIndicator';
+        } else {
+            const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            
+            let formattedContent = content;
+            
+            if (type === 'ai') {
+                formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                formattedContent = formattedContent.replace(/^[•\-]\s+(.*)$/gm, '<li>$1</li>');
+                formattedContent = formattedContent.replace(/^(\d+)\.\s+(.*)$/gm, '<li>$2</li>');
+                
+                if (formattedContent.includes('<li>')) {
+                    formattedContent = formattedContent.replace(/((?:<li>.*?<\/li>\s*)+)/g, '<ul>$1</ul>');
+                }
+                
+                formattedContent = formattedContent.replace(/\*\*(.*?):\*\*/g, '<span class="section-title">$1:</span>');
+                formattedContent = formattedContent.replace(/\n/g, '<br>');
+            }
+
+            div.innerHTML = `
+                ${formattedContent}
+                <span class="msg-time">${time}</span>
+            `;
+        }
+
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        return div;
+    }
+
+    function removeTyping() {
+        const typing = document.getElementById('typingIndicator');
+        if (typing) typing.remove();
+    }
+
+    // ============================================================
+    // SEND CHAT
+    // ============================================================
+    async function sendChat() {
+        const input = document.getElementById('chatInput');
+        const question = input.value.trim();
+        if (!question || isProcessing) return;
+
+        input.value = '';
+        addChatMessage('user', question);
+        await askPoppin(question);
+    }
+
+    function quickAsk(question) {
+        document.getElementById('chatInput').value = question;
+        sendChat();
+    }
+
+    // ============================================================
+    // ASK POPPIN
+    // ============================================================
+    async function askPoppin(question) {
+        if (isProcessing) return;
+        isProcessing = true;
+        document.getElementById('sendBtn').disabled = true;
+
+        addChatMessage('ai', '', true);
+
+        try {
+            const prompt = `Anda adalah Poppin AI, asisten kesehatan yang ramah dan profesional. 
+Pengguna bertanya: "${question}"
+
+Berikan jawaban yang informatif, akurat, dan mudah dipahami. Gunakan bahasa Indonesia yang hangat dan bersahabat.
+Format jawaban dengan struktur:
+- Gunakan **teks tebal** untuk kata kunci
+- Gunakan bullet points (•) untuk poin-poin penting
+- Gunakan **Judul:** untuk bagian-bagian penting
+- Pisahkan paragraf dengan jelas
+- Maksimal 200 kata.`;
+
+            const response = await callGroq(prompt);
+            removeTyping();
+            addChatMessage('ai', response);
+        } catch (error) {
+            removeTyping();
+            addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${error.message}. Coba lagi nanti.`);
+        }
+
+        isProcessing = false;
+        document.getElementById('sendBtn').disabled = false;
+    }
+
+    // ============================================================
+    // ANALYZE SINGLE
+    // ============================================================
+    async function analyzeSingle(item) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        addChatMessage('ai', '', true);
+
+        try {
+            const prompt = `Anda adalah Poppin AI, asisten kesehatan yang ramah dan profesional. 
+Analisis hasil pemeriksaan berikut:
+- Pemeriksaan: ${item.title}
+- Nilai: ${item.value} ${item.unit}
+- Rentang normal: ${item.normal}
+
+Berikan analisis dengan struktur:
+**Interpretasi:** (normal/tidak normal)
+**Dampak:** (jelaskan jika tidak normal)
+**Rekomendasi:**
+• Poin 1
+• Poin 2
+• Poin 3
+**Kapan ke dokter:** (saran)
+
+Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata.`;
+
+            const response = await callGroq(prompt);
+            removeTyping();
+            addChatMessage('ai', response);
+        } catch (error) {
+            removeTyping();
+            addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${error.message}. Coba lagi nanti.`);
+        }
+
+        isProcessing = false;
+        document.getElementById('sendBtn').disabled = false;
+    }
+
+    // ============================================================
+    // CALL GROQ API
+    // ============================================================
+    async function callGroq(prompt) {
+        const response = await fetch(GROQ_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.1-8b-instant',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat. Format jawaban dengan markdown sederhana: gunakan **teks tebal** untuk penekanan, gunakan bullet points (•) untuk daftar, dan pisahkan paragraf dengan newline.'
+                    },
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 500,
+                top_p: 0.9,
+                stream: false
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API Error (${response.status}): ${errorText}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0]?.message?.content || 'Maaf, tidak ada respons dari AI.';
+    }
+
+    // ============================================================
+    // CLEAR CHAT
+    // ============================================================
+    function clearChat() {
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = `
+            <div class="chat-msg ai">
+                🧹 Chat dibersihkan. Saya siap membantu Anda!
+                <span class="msg-time">Sekarang</span>
+            </div>
+        `;
+        removeTyping();
+    }
+
+    // ============================================================
+    // ENTER KEY
+    // ============================================================
+    document.getElementById('chatInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendChat();
+        }
+    });
+
+    document.getElementById('modalInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            saveModal();
+        }
+    });
+
+    // ============================================================
+    // NAVIGASI
+    // ============================================================
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page');
+
+    function switchPage(pageId) {
+        pages.forEach(p => p.classList.remove('active-page'));
+        const target = document.getElementById(pageId);
+        if (target) target.classList.add('active-page');
+        navItems.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.page === pageId) btn.classList.add('active');
+        });
+    }
+
+    navItems.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (this.getAttribute('href')) {
+                return;
+            }
+            e.preventDefault();
+            const pageId = this.dataset.page;
+            if (pageId) switchPage(pageId);
+        });
+    });
+
+    const currentPage = window.location.pathname.split('/').pop() || 'diagnosis.html';
+    const pageMap = {
+        'index.html': 'homePage',
+        'tracking.html': 'trackingPage',
+        'diagnosis.html': 'diagnosisPage',
+        'profil.html': 'profilPage'
+    };
+    const targetPage = pageMap[currentPage] || 'diagnosisPage';
+    switchPage(targetPage);
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    renderExamNav();
+
+    console.log('🧠 Poppin AI siap membantu!');
+    console.log('📊 Diagnosis data:', diagnosisData);
+    console.log('📜 History:', diagnosisHistory);
+    console.log('🤖 Model: llama-3.1-8b-instant');
+</script>
+</body>
+</html>
