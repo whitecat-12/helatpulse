@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>HealthPulse — Tracking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #EEF2FF;
+            --primary-dark: #4338CA;
+            --primary-gradient: linear-gradient(135deg, #4F46E5, #7C3AED);
+            --bg: #F8FAFC;
+            --white: #FFFFFF;
+            --text: #0F172A;
+            --text-secondary: #64748B;
+            --text-light: #94A3B8;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 20px rgba(79, 70, 229, 0.12);
+            --shadow-lg: 0 12px 40px rgba(79, 70, 229, 0.18);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-full: 50px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(160deg, #EEF2FF 0%, #F8FAFC 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phone-frame {
+            max-width: 400px;
+            width: 100%;
+            height: 100vh;
+            max-height: 860px;
+            background: var(--bg);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.08);
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px 16px 80px 16px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            height: 100%;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .page-content::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+
+        .page {
+            display: none;
+            min-height: 100%;
+            height: auto;
+        }
+        .page.active-page {
+            display: block;
+            animation: slideUp 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ----- BOTTOM NAV ----- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 6px 16px 6px;
+            border-top: 1px solid rgba(203, 213, 225, 0.3);
+            z-index: 100;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.04);
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 6px 0 3px 0;
+            background: transparent;
+            border: none;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            position: relative;
+            text-decoration: none;
+            z-index: 101;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active i {
+            color: var(--primary);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        .nav-item.active span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .nav-item:active { transform: scale(0.92); }
+
+        /* ----- HEADER ----- */
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 2px;
+            flex-shrink: 0;
+        }
+
+        .greeting {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+        .greeting span {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+            transition: var(--transition);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .avatar-icon:active { transform: scale(0.92); }
+
+        /* ============================================================
+           TRACKING PAGE
+           ============================================================ */
+        .tracking-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding-bottom: 8px;
+        }
+
+        .tracking-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px 14px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(203, 213, 225, 0.3);
+            transition: var(--transition);
+        }
+
+        .tracking-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .tracking-card .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tracking-card .card-title i {
+            color: var(--primary);
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .tracking-card .card-title .badge-count {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 9px;
+            font-weight: 600;
+            padding: 1px 8px;
+            border-radius: 40px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        /* Input Grid */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .input-group label {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group input {
+            padding: 7px 10px;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            outline: none;
+            transition: var(--transition);
+            background: var(--bg);
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-light);
+            font-weight: 400;
+            font-size: 10px;
+        }
+
+        .input-group .helper {
+            font-size: 7px;
+            color: var(--text-light);
+            margin-top: 1px;
+        }
+
+        /* Button */
+        .btn-generate {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-md);
+            margin-top: 6px;
+        }
+
+        .btn-generate:active {
+            transform: scale(0.96);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-generate i {
+            font-size: 13px;
+        }
+
+        /* Recommendation Result */
+        .recommendation-result {
+            background: var(--primary-light);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-top: 10px;
+            border-left: 4px solid var(--primary);
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        .recommendation-result.show {
+            display: block;
+        }
+
+        .recommendation-result .result-content {
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+        .recommendation-result .result-content strong {
+            color: var(--primary-dark);
+        }
+
+        .recommendation-result .result-content ul {
+            padding-left: 16px;
+            margin: 4px 0 2px 0;
+        }
+
+        .recommendation-result .result-content li {
+            list-style-type: disc;
+            margin-bottom: 1px;
+        }
+
+        .recommendation-result .result-content .section-title {
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: block;
+            margin-top: 6px;
+        }
+
+        .recommendation-result .result-content .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .result-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+        }
+
+        .result-loading .spinner {
+            width: 16px;
+            height: 16px;
+            border: 3px solid var(--primary-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-loading span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Quick Status Summary */
+        .status-summary {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .status-pill {
+            padding: 2px 8px;
+            border-radius: 40px;
+            font-size: 8px;
+            font-weight: 600;
+            background: #F1F5F9;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-pill .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .status-pill .dot.normal { background: var(--success); }
+        .status-pill .dot.warning { background: var(--warning); }
+        .status-pill .dot.danger { background: var(--danger); }
+        .status-pill .dot.empty { background: #CBD5E1; }
+
+        /* Habits Section */
+        .habits-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .habit-tag {
+            padding: 5px 8px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .habit-tag.good {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .habit-tag.bad {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .habit-tag i {
+            font-size: 9px;
+            flex-shrink: 0;
+        }
+
+        /* ===== PAGE PLACEHOLDER ===== */
+        .page-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+        }
+        .page-placeholder i {
+            font-size: 48px;
+            color: var(--primary-light);
+            margin-bottom: 12px;
+        }
+        .page-placeholder h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .page-placeholder p {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 380px) {
+            .page-content {
+                padding: 12px 12px 75px 12px;
+            }
+            .input-grid {
+                gap: 6px;
+            }
+            .input-group input {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+            .habits-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .habit-tag {
+                font-size: 8px;
+                padding: 4px 6px;
+            }
+            .tracking-card {
+                padding: 12px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="phone-frame">
+    <div class="page-content">
+
+        <!-- TRACKING PAGE -->
+        <div id="trackingPage" class="page active-page">
+            <div class="header-flex">
+                <div class="greeting"><span>Tracking</span> Kesehatan</div>
+                <div class="avatar-icon" onclick="resetForm()"><i class="fas fa-rotate-right"></i></div>
+            </div>
+
+            <div class="tracking-container">
+                <!-- Status Ringkasan -->
+                <div class="tracking-card">
+                    <div class="card-title">
+                        <i class="fas fa-clipboard-check"></i>
+                        Ringkasan Pemeriksaan
+                        <span class="badge-count" id="statusCount">0 terisi</span>
+                    </div>
+                    <div class="status-summary" id="statusSummary">
+                        <!-- Dinamis dari JS -->
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <div class="tracking-card">
+                    <div class="card-title">
+                        <i class="fas fa-flask"></i>
+                        Masukkan Hasil Pemeriksaan
+                    </div>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Gula Darah <span style="font-weight:400;color:var(--text-light);">(mg/dL)</span></label>
+                            <input type="number" id="gulaDarah" placeholder="70-140" step="0.1" />
+                            <span class="helper">Normal: 70-140 mg/dL</span>
+                        </div>
+                        <div class="input-group">
+                            <label>Tekanan Darah <span style="font-weight:400;color:var(--text-light);">(mmHg)</span></label>
+                            <input type="number" id="tekananDarah" placeholder="120/80" step="1" />
+                            <span class="helper">Normal: 120/80 mmHg</span>
+                        </div>
+                        <div class="input-group">
+                            <label>Asam Urat <span style="font-weight:400;color:var(--text-light);">(mg/dL)</span></label>
+                            <input type="number" id="asamUrat" placeholder="2.4-6.0" step="0.1" />
+                            <span class="helper">Normal: 2.4-6.0 mg/dL</span>
+                        </div>
+                        <div class="input-group">
+                            <label>Kolesterol <span style="font-weight:400;color:var(--text-light);">(mg/dL)</span></label>
+                            <input type="number" id="kolesterol" placeholder="<200" step="1" />
+                            <span class="helper">Normal: &lt;200 mg/dL</span>
+                        </div>
+                    </div>
+                    <button class="btn-generate" id="generateBtn" onclick="generateRecommendations()">
+                        <i class="fas fa-wand-magic-sparkles"></i> Dapatkan Rekomendasi
+                    </button>
+                </div>
+
+                <!-- Hasil Rekomendasi -->
+                <div class="tracking-card" id="resultCard">
+                    <div class="card-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Rekomendasi Poppin AI
+                        <span class="badge-count" id="resultBadge">AI</span>
+                    </div>
+                    <div class="recommendation-result" id="recommendationResult">
+                        <!-- Diisi oleh JS -->
+                    </div>
+                </div>
+
+                <!-- Kebiasaan Baik -->
+                <div class="tracking-card">
+                    <div class="card-title">
+                        <i class="fas fa-check-circle"></i>
+                        Kebiasaan yang Dianjurkan
+                        <span class="badge-count" id="habitBadge">Habits</span>
+                    </div>
+                    <div class="habits-grid" id="habitsContainer">
+                        <!-- Dinamis dari JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAGNOSIS PAGE (Placeholder untuk nav) -->
+        <div id="diagnosisPage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-comment-dots"></i>
+                <h3>Poppin AI</h3>
+                <p>Buka halaman diagnosis untuk chat dengan AI</p>
+            </div>
+        </div>
+
+        <!-- HOME PAGE (Placeholder) -->
+        <div id="homePage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-house"></i>
+                <h3>Beranda</h3>
+                <p>Kembali ke halaman utama</p>
+            </div>
+        </div>
+
+        <!-- PROFIL PAGE (Placeholder) -->
+        <div id="profilPage" class="page">
+            <div class="page-placeholder">
+                <i class="fas fa-user-circle"></i>
+                <h3>Profil Saya</h3>
+                <p>Nama: Andi<br>Usia: 28<br>Berat: 70 kg</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item" data-page="homePage">
+            <i class="fas fa-house"></i><span>Beranda</span>
+        </a>
+        <a href="tracking.html" class="nav-item active" data-page="trackingPage">
+            <i class="fas fa-chart-line"></i><span>Tracking</span>
+        </a>
+        <a href="diagnosis.html" class="nav-item" data-page="diagnosisPage">
+            <i class="fas fa-comment-dots"></i><span>Poppin AI</span>
+        </a>
+        <a href="profil.html" class="nav-item" data-page="profilPage">
+            <i class="fas fa-user"></i><span>Profil</span>
+        </a>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI GROQ AI
+    // ============================================================
+    const GROQ_API_KEY = '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';
+    const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+    // ============================================================
+    // DATA PEMERIKSAAN
+    // ============================================================
+    const examData = [
+        { id: 'gula', label: 'Gula Darah', key: 'gulaDarah', normal: '70-140', unit: 'mg/dL' },
+        { id: 'td', label: 'Tekanan Darah', key: 'tekananDarah', normal: '120/80', unit: 'mmHg' },
+        { id: 'asamurat', label: 'Asam Urat', key: 'asamUrat', normal: '2.4-6.0', unit: 'mg/dL' },
+        { id: 'kolesterol', label: 'Kolesterol', key: 'kolesterol', normal: '<200', unit: 'mg/dL' },
+    ];
+
+    const defaultHabits = [
+        { text: 'Minum air putih 8 gelas/hari', type: 'good', icon: 'fa-water' },
+        { text: 'Tidur 7-8 jam per malam', type: 'good', icon: 'fa-bed' },
+        { text: 'Konsumsi gula berlebih', type: 'bad', icon: 'fa-ban' },
+        { text: 'Makan makanan berserat', type: 'good', icon: 'fa-leaf' },
+    ];
+
+    let isGenerating = false;
+
+    // ============================================================
+    // STATUS SUMMARY
+    // ============================================================
+    function updateStatusSummary() {
+        const summary = document.getElementById('statusSummary');
+        const count = document.getElementById('statusCount');
+        let filled = 0;
+
+        summary.innerHTML = '';
+        examData.forEach(item => {
+            const input = document.getElementById(item.key);
+            const val = parseFloat(input.value);
+            if (!isNaN(val) && val > 0) {
+                filled++;
+                const status = getStatus(item.id, val);
+                const pill = document.createElement('span');
+                pill.className = 'status-pill';
+                pill.innerHTML = `
+                    <span class="dot ${status}"></span>
+                    ${item.label}: ${val}
+                `;
+                summary.appendChild(pill);
+            }
+        });
+
+        if (filled === 0) {
+            summary.innerHTML = '<span style="font-size:11px;color:var(--text-light);">Belum ada data yang dimasukkan</span>';
+        }
+
+        count.textContent = `${filled} terisi`;
+    }
+
+    // ============================================================
+    // STATUS LOGIC
+    // ============================================================
+    function getStatus(id, value) {
+        switch(id) {
+            case 'gula':
+                if (value >= 70 && value <= 140) return 'normal';
+                if ((value >= 60 && value < 70) || (value > 140 && value <= 180)) return 'warning';
+                return 'danger';
+            case 'td':
+                if (value < 120) return 'normal';
+                if (value < 140) return 'warning';
+                return 'danger';
+            case 'asamurat':
+                if (value >= 2.4 && value <= 6.0) return 'normal';
+                if ((value >= 2.0 && value < 2.4) || (value > 6.0 && value <= 7.5)) return 'warning';
+                return 'danger';
+            case 'kolesterol':
+                if (value < 200) return 'normal';
+                if (value < 240) return 'warning';
+                return 'danger';
+            default:
+                return 'normal';
+        }
+    }
+
+    // ============================================================
+    // GENERATE RECOMMENDATIONS
+    // ============================================================
+    async function generateRecommendations() {
+        if (isGenerating) return;
+
+        const inputs = examData.map(item => {
+            const input = document.getElementById(item.key);
+            const val = parseFloat(input.value);
+            return {
+                ...item,
+                value: val,
+                status: !isNaN(val) && val > 0 ? getStatus(item.id, val) : null,
+                valid: !isNaN(val) && val > 0
+            };
+        });
+
+        const hasData = inputs.some(i => i.valid);
+        if (!hasData) {
+            alert('Masukkan minimal satu nilai pemeriksaan terlebih dahulu!');
+            return;
+        }
+
+        isGenerating = true;
+        const btn = document.getElementById('generateBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menganalisis...';
+
+        const resultDiv = document.getElementById('recommendationResult');
+        resultDiv.className = 'recommendation-result show';
+        resultDiv.innerHTML = `
+            <div class="result-loading">
+                <div class="spinner"></div>
+                <span>Poppin AI sedang menganalisis data Anda...</span>
+            </div>
+        `;
+
+        // Scroll ke hasil
+        document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        try {
+            const dataStr = inputs
+                .filter(i => i.valid)
+                .map(i => `${i.label}: ${i.value} ${i.unit} (${i.status})`)
+                .join('\n');
+
+            const prompt = `Anda adalah Poppin AI, asisten kesehatan profesional yang ramah dan hangat.
+
+Data pemeriksaan pasien:
+${dataStr}
+
+Berdasarkan data di atas, berikan rekomendasi kesehatan yang lengkap dengan format:
+
+**Rekomendasi Makanan:**
+• Makanan yang DIANJURKAN (sebutkan minimal 3)
+• Makanan yang DILARANG (sebutkan minimal 3)
+
+**Aktivitas Fisik:**
+• Aktivitas yang DIANJURKAN (sebutkan minimal 3)
+• Aktivitas yang DILARANG (sebutkan minimal 2)
+
+**Kebiasaan Baik:**
+• Sebutkan 4 kebiasaan baik yang harus dilakukan
+
+**Kesimpulan:** (ringkasan singkat)
+
+Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan penjelasan singkat untuk setiap poin. Jangan gunakan asterisk (*) atau markdown berlebihan, gunakan format teks biasa dengan bullet points (•).`;
+
+            const response = await callGroq(prompt);
+            
+            resultDiv.innerHTML = `<div class="result-content">${formatRecommendation(response)}</div>`;
+            updateHabitsFromAI(response);
+
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <div class="result-content" style="color:var(--danger);">
+                    ⚠️ Maaf, terjadi kesalahan: ${error.message}. Coba lagi nanti.
+                </div>
+            `;
+        }
+
+        isGenerating = false;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Dapatkan Rekomendasi';
+
+        updateStatusSummary();
+    }
+
+    // ============================================================
+    // FORMAT RECOMMENDATION
+    // ============================================================
+    function formatRecommendation(text) {
+        let formatted = text
+            .replace(/\*\*(.*?):\*\*/g, '<span class="section-title">$1:</span>')
+            .replace(/^[•\-]\s+(.*)$/gm, '<li>$1</li>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+
+        formatted = formatted.replace(/((?:<li>.*?<\/li>\s*)+)/g, '<ul>$1</ul>');
+
+        return formatted;
+    }
+
+    // ============================================================
+    // UPDATE HABITS FROM AI
+    // ============================================================
+    function updateHabitsFromAI(text) {
+        const container = document.getElementById('habitsContainer');
+        
+        const habits = [];
+        const lines = text.split('\n');
+        let inHabits = false;
+
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.toLowerCase().includes('kebiasaan baik')) {
+                inHabits = true;
+                continue;
+            }
+            if (inHabits && trimmed.match(/^[•\-]\s*/)) {
+                const habitText = trimmed.replace(/^[•\-]\s*/, '').trim();
+                if (habitText.length > 0 && habitText.length < 100) {
+                    habits.push(habitText);
+                }
+            }
+            if (inHabits && trimmed.length === 0 && habits.length > 0) {
+                break;
+            }
+            if (inHabits && habits.length >= 4) break;
+        }
+
+        if (habits.length === 0) {
+            renderDefaultHabits(container);
+            return;
+        }
+
+        container.innerHTML = habits.map(h => `
+            <div class="habit-tag good">
+                <i class="fas fa-check-circle"></i> ${h.substring(0, 40)}
+            </div>
+        `).join('');
+    }
+
+    function renderDefaultHabits(container) {
+        container.innerHTML = defaultHabits.map(h => `
+            <div class="habit-tag ${h.type}">
+                <i class="fas ${h.icon}"></i> ${h.text}
+            </div>
+        `).join('');
+    }
+
+    // ============================================================
+    // CALL GROQ API
+    // ============================================================
+    async function callGroq(prompt) {
+        const response = await fetch(GROQ_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.1-8b-instant',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat. Format jawaban dengan bullet points (•) dan gunakan **teks tebal** untuk penekanan.'
+                    },
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 800,
+                top_p: 0.9,
+                stream: false
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API Error (${response.status}): ${errorText}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0]?.message?.content || 'Maaf, tidak ada respons dari AI.';
+    }
+
+    // ============================================================
+    // RESET FORM
+    // ============================================================
+    function resetForm() {
+        examData.forEach(item => {
+            document.getElementById(item.key).value = '';
+        });
+        document.getElementById('recommendationResult').className = 'recommendation-result';
+        document.getElementById('recommendationResult').innerHTML = '';
+        renderDefaultHabits(document.getElementById('habitsContainer'));
+        updateStatusSummary();
+        
+        const btn = document.getElementById('generateBtn');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Dapatkan Rekomendasi';
+        isGenerating = false;
+    }
+
+    // ============================================================
+    // NAVIGASI
+    // ============================================================
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page');
+
+    function switchPage(pageId) {
+        pages.forEach(p => p.classList.remove('active-page'));
+        const target = document.getElementById(pageId);
+        if (target) target.classList.add('active-page');
+        navItems.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.page === pageId) btn.classList.add('active');
+        });
+        // Reset scroll saat pindah halaman
+        document.querySelector('.page-content').scrollTop = 0;
+    }
+
+    navItems.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (this.getAttribute('href')) return;
+            e.preventDefault();
+            const pageId = this.dataset.page;
+            if (pageId) switchPage(pageId);
+        });
+    });
+
+    const currentPage = window.location.pathname.split('/').pop() || 'tracking.html';
+    const pageMap = {
+        'index.html': 'homePage',
+        'tracking.html': 'trackingPage',
+        'diagnosis.html': 'diagnosisPage',
+        'profil.html': 'profilPage'
+    };
+    const targetPage = pageMap[currentPage] || 'trackingPage';
+    switchPage(targetPage);
+
+    // ============================================================
+    // AUTO-UPDATE STATUS
+    // ============================================================
+    examData.forEach(item => {
+        document.getElementById(item.key).addEventListener('input', updateStatusSummary);
+    });
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    renderDefaultHabits(document.getElementById('habitsContainer'));
+    updateStatusSummary();
+
+    console.log('📊 Tracking HealthPulse siap!');
+    console.log('🤖 Model: llama-3.1-8b-instant');
+</script>
+</body>
+</html>
