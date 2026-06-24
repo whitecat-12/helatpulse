@@ -36,10 +36,10 @@
         html, body {
             height: 100%;
             overflow: hidden;
+            background: linear-gradient(160deg, #EEF2FF 0%, #F8FAFC 100%);
         }
 
         body {
-            background: linear-gradient(160deg, #EEF2FF 0%, #F8FAFC 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -67,6 +67,7 @@
             padding: 16px 16px 90px 16px;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 95px;
         }
 
         .page-content::-webkit-scrollbar {
@@ -79,12 +80,11 @@
 
         .page {
             display: none;
-            height: 100%;
             min-height: 100%;
+            padding-bottom: 10px;
         }
         .page.active-page {
-            display: flex;
-            flex-direction: column;
+            display: block;
             animation: slideUp 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
         }
 
@@ -105,7 +105,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 6px 6px 16px 6px;
+            padding: 6px 6px max(16px, env(safe-area-inset-bottom));
             border-top: 1px solid rgba(203, 213, 225, 0.3);
             z-index: 100;
             box-shadow: 0 -4px 30px rgba(0,0,0,0.04);
@@ -130,6 +130,7 @@
             position: relative;
             text-decoration: none;
             z-index: 101;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .nav-item i {
@@ -209,6 +210,7 @@
             transition: var(--transition);
             cursor: pointer;
             text-decoration: none;
+            flex-shrink: 0;
         }
         .avatar-icon:active { transform: scale(0.92); }
 
@@ -279,6 +281,8 @@
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
             border: 1px solid rgba(203, 213, 225, 0.15);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
         .quick-item i {
             font-size: 18px;
@@ -349,6 +353,7 @@
             justify-content: space-between;
             min-height: 120px;
             position: relative;
+            -webkit-tap-highlight-color: transparent;
         }
         .mission-card::after {
             content: '';
@@ -417,6 +422,7 @@
             align-items: center;
             gap: 4px;
             box-shadow: 0 1px 4px rgba(79, 70, 229, 0.06);
+            -webkit-tap-highlight-color: transparent;
         }
         .mission-card .done-btn i {
             font-size: 10px;
@@ -481,6 +487,7 @@
             cursor: pointer;
             position: relative;
             min-height: 110px;
+            -webkit-tap-highlight-color: transparent;
         }
         .complaint-card:active {
             transform: scale(0.96);
@@ -566,9 +573,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex: 1;
+            min-height: 60vh;
             color: var(--text-secondary);
             text-align: center;
+            padding: 20px;
         }
         .page-placeholder i {
             font-size: 56px;
@@ -636,6 +644,53 @@
             }
             .quick-item span {
                 font-size: 9px;
+            }
+            .greeting {
+                font-size: 17px;
+            }
+            .score-banner .value {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .mission-card {
+                flex: 0 0 130px;
+                min-height: 90px;
+                padding: 10px;
+            }
+            .complaint-card {
+                flex: 0 0 120px;
+                min-height: 80px;
+                padding: 10px;
+            }
+            .quick-grid {
+                gap: 5px;
+            }
+            .quick-item {
+                padding: 8px 2px;
+            }
+            .score-banner {
+                padding: 16px 18px;
+            }
+            .score-banner .value {
+                font-size: 28px;
+            }
+        }
+
+        @media (min-height: 800px) {
+            .page-content {
+                padding-bottom: 100px;
+            }
+        }
+
+        /* Safe area support untuk notch phones */
+        @supports (padding: max(0px)) {
+            .bottom-nav {
+                padding-bottom: max(16px, env(safe-area-inset-bottom));
+            }
+            .page-content {
+                padding-bottom: max(90px, calc(env(safe-area-inset-bottom) + 70px));
             }
         }
     </style>
@@ -922,6 +977,8 @@
             btn.classList.remove('active');
             if (btn.dataset.page === pageId) btn.classList.add('active');
         });
+        // Scroll ke atas saat pindah halaman
+        document.querySelector('.page-content').scrollTop = 0;
     }
 
     navItems.forEach(btn => {
