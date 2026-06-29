@@ -789,9 +789,9 @@
 
 <script>
     // ============================================================
-    // KONFIGURASI NAYRA AI
+    // KONFIGURASI CLOUDFLARE WORKER
     // ============================================================
-    const NAYRA_API_URL = 'https://nayra-ai.astrob379.workers.dev';
+    const WORKER_API_URL = 'https://nayra-ai.astrob379.workers.dev';
 
     // ============================================================
     // DATA DIAGNOSIS
@@ -994,7 +994,7 @@
     }
 
     // ============================================================
-    // ASK POPPIN (NAYRA AI)
+    // ASK POPPIN - Via Cloudflare Worker
     // ============================================================
     async function askPoppin(question) {
         if (isProcessing) return;
@@ -1015,7 +1015,7 @@ Format jawaban dengan struktur:
 - Pisahkan paragraf dengan jelas
 - Maksimal 200 kata.`;
 
-            const response = await callNayra(prompt);
+            const response = await callWorker(prompt);
             removeTyping();
             addChatMessage('ai', response);
         } catch (error) {
@@ -1028,7 +1028,7 @@ Format jawaban dengan struktur:
     }
 
     // ============================================================
-    // ANALYZE SINGLE (NAYRA AI)
+    // ANALYZE SINGLE - Via Cloudflare Worker
     // ============================================================
     async function analyzeSingle(item) {
         if (isProcessing) return;
@@ -1054,7 +1054,7 @@ Berikan analisis dengan struktur:
 
 Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata.`;
 
-            const response = await callNayra(prompt);
+            const response = await callWorker(prompt);
             removeTyping();
             addChatMessage('ai', response);
         } catch (error) {
@@ -1067,37 +1067,40 @@ Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata
     }
 
     // ============================================================
-    // CALL NAYRA AI API
+    // CALL CLOUDFLARE WORKER
     // ============================================================
-    async function callNayra(prompt) {
-        const response = await fetch(NAYRA_API_URL, {
+    async function callWorker(prompt) {
+        const response = await fetch(WORKER_API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat. Format jawaban dengan markdown sederhana: gunakan **teks tebal** untuk penekanan, gunakan bullet points (•) untuk daftar, dan pisahkan paragraf dengan newline.'
-                    },
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 500
+                prompt: prompt,
+                system: 'Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat. Format jawaban dengan markdown sederhana: gunakan **teks tebal** untuk penekanan, gunakan bullet points (•) untuk daftar, dan pisahkan paragraf dengan newline.'
             })
         });
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`API Error (${response.status}): ${errorText}`);
+            throw new Error(`Worker Error (${response.status}): ${errorText}`);
         }
 
         const data = await response.json();
-        return data.choices[0]?.message?.content || 'Maaf, tidak ada respons dari AI.';
+        
+        // Sesuaikan dengan struktur respons dari Worker Anda
+        if (data.response) {
+            return data.response;
+        } else if (data.message) {
+            return data.message;
+        } else if (data.content) {
+            return data.content;
+        } else if (data.result) {
+            return data.result;
+        } else {
+            // Coba parsing jika format berbeda
+            return JSON.stringify(data);
+        }
     }
 
     // ============================================================
@@ -1175,7 +1178,7 @@ Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata
     console.log('🧠 Poppin AI siap membantu!');
     console.log('📊 Diagnosis data:', diagnosisData);
     console.log('📜 History:', diagnosisHistory);
-    console.log('🤖 API: Nayra AI');
+    console.log('🌐 Worker endpoint:', WORKER_API_URL);
 </script>
 </body>
 </html>
