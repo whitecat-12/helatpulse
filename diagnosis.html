@@ -789,10 +789,9 @@
 
 <script>
     // ============================================================
-    // KONFIGURASI GROQ AI
+    // KONFIGURASI NAYRA AI
     // ============================================================
-    const GROQ_API_KEY = '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';
-    const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+    const NAYRA_API_URL = 'https://nayra-ai.astrob379.workers.dev';
 
     // ============================================================
     // DATA DIAGNOSIS
@@ -995,7 +994,7 @@
     }
 
     // ============================================================
-    // ASK POPPIN
+    // ASK POPPIN (NAYRA AI)
     // ============================================================
     async function askPoppin(question) {
         if (isProcessing) return;
@@ -1016,7 +1015,7 @@ Format jawaban dengan struktur:
 - Pisahkan paragraf dengan jelas
 - Maksimal 200 kata.`;
 
-            const response = await callGroq(prompt);
+            const response = await callNayra(prompt);
             removeTyping();
             addChatMessage('ai', response);
         } catch (error) {
@@ -1029,7 +1028,7 @@ Format jawaban dengan struktur:
     }
 
     // ============================================================
-    // ANALYZE SINGLE
+    // ANALYZE SINGLE (NAYRA AI)
     // ============================================================
     async function analyzeSingle(item) {
         if (isProcessing) return;
@@ -1055,7 +1054,7 @@ Berikan analisis dengan struktur:
 
 Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata.`;
 
-            const response = await callGroq(prompt);
+            const response = await callNayra(prompt);
             removeTyping();
             addChatMessage('ai', response);
         } catch (error) {
@@ -1068,17 +1067,15 @@ Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata
     }
 
     // ============================================================
-    // CALL GROQ API
+    // CALL NAYRA AI API
     // ============================================================
-    async function callGroq(prompt) {
-        const response = await fetch(GROQ_API_URL, {
+    async function callNayra(prompt) {
+        const response = await fetch(NAYRA_API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${GROQ_API_KEY}`
             },
             body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
                 messages: [
                     {
                         role: 'system',
@@ -1090,9 +1087,7 @@ Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata
                     }
                 ],
                 temperature: 0.7,
-                max_tokens: 500,
-                top_p: 0.9,
-                stream: false
+                max_tokens: 500
             })
         });
 
@@ -1180,7 +1175,7 @@ Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata
     console.log('🧠 Poppin AI siap membantu!');
     console.log('📊 Diagnosis data:', diagnosisData);
     console.log('📜 History:', diagnosisHistory);
-    console.log('🤖 Model: llama-3.1-8b-instant');
+    console.log('🤖 API: Nayra AI');
 </script>
 </body>
 </html>
