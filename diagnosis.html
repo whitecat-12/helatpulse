@@ -1016,7 +1016,13 @@ Format jawaban dengan struktur:
 
             const response = await callWorker(question, systemPrompt);
             removeTyping();
-            addChatMessage('ai', response);
+            
+            // Cek apakah response mengandung error
+            if (response.error) {
+                addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${response.error}`);
+            } else {
+                addChatMessage('ai', response);
+            }
         } catch (error) {
             removeTyping();
             addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${error.message}. Coba lagi nanti.`);
@@ -1055,7 +1061,12 @@ Berikan analisis dengan struktur:
 
             const response = await callWorker(userPrompt, systemPrompt);
             removeTyping();
-            addChatMessage('ai', response);
+            
+            if (response.error) {
+                addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${response.error}`);
+            } else {
+                addChatMessage('ai', response);
+            }
         } catch (error) {
             removeTyping();
             addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${error.message}. Coba lagi nanti.`);
@@ -1066,90 +1077,58 @@ Berikan analisis dengan struktur:
     }
 
     // ============================================================
-    // CALL CLOUDFLARE WORKER - PERBAIKAN
+    // CALL CLOUDFLARE WORKER
     // ============================================================
     async function callWorker(prompt, systemPrompt) {
         try {
-            // Validasi input
-            if (!prompt || typeof prompt !== 'string') {
-                throw new Error('Prompt harus berupa string');
-            }
-
-            // Format messages dengan benar
-            const messages = [];
-            
-            // Tambahkan system prompt jika ada
-            if (systemPrompt) {
-                messages.push({
-                    role: "system",
-                    content: systemPrompt
-                });
-            } else {
-                messages.push({
-                    role: "system",
-                    content: "Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat."
-                });
-            }
-            
-            // Tambahkan user prompt
-            messages.push({
-                role: "user",
-                content: prompt
-            });
-
-            console.log('Sending to Worker:', {
-                messages: messages,
-                temperature: 0.7,
-                max_tokens: 1024
-            });
-
             const response = await fetch(WORKER_API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    messages: messages,
+                    messages: [
+                        {
+                            role: "system",
+                            content: systemPrompt || "Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat."
+                        },
+                        {
+                            role: "user",
+                            content: prompt
+                        }
+                    ],
                     temperature: 0.7,
                     max_tokens: 1024
                 })
             });
 
-            console.log('Worker Response Status:', response.status);
-
-            // Coba baca response sebagai text dulu untuk debug
-            const responseText = await response.text();
-            console.log('Raw Response:', responseText);
-
-            // Parse JSON
-            let data;
-            try {
-                data = JSON.parse(responseText);
-            } catch (e) {
-                console.error('Failed to parse JSON:', e);
-                throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}...`);
-            }
-
             if (!response.ok) {
-                throw new Error(data.error || data.details || `HTTP ${response.status}`);
+                const errorText = await response.text();
+                console.error('Worker Error Response:', errorText);
+                throw new Error(`Worker Error (${response.status}): ${errorText}`);
             }
 
-            if (data.error) {
-                throw new Error(data.error);
-            }
-
-            // Ambil response dari berbagai kemungkinan format
-            const result = data.response || data.message || data.content || data.result;
+            const data = await response.json();
+            console.log('Worker Response:', data);
             
-            if (!result) {
-                console.error('No response field found in:', data);
-                throw new Error('Tidak ada respons dari AI');
+            // Cek apakah response mengandung error
+            if (data.error) {
+                return { error: data.error };
             }
-
-            return result;
+            
+            // Cek berbagai kemungkinan format response
+            const result = data.response || data.message || data.content || data.result || JSON.stringify(data);
+            
+            // Jika result adalah string, return langsung
+            if (typeof result === 'string') {
+                return result;
+            }
+            
+            // Jika result adalah object, stringify
+            return JSON.stringify(result);
         } catch (error) {
             console.error('Call Worker Error:', error);
-            throw new Error(`Worker Error: ${error.message}`);
+            throw error;
         }
     }
 
