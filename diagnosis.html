@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        /* (CSS SAMA SEPERTI SEBELUMNYA) */
         * {
             margin: 0;
             padding: 0;
@@ -790,9 +789,10 @@
 
 <script>
     // ============================================================
-    // KONFIGURASI CLOUDFLARE WORKER
+    // KONFIGURASI GROQ AI
     // ============================================================
-    const WORKER_API_URL = 'https://nayra-ai.astrob379.workers.dev';
+    const GROQ_API_KEY = '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';
+    const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
     // ============================================================
     // DATA DIAGNOSIS
@@ -995,7 +995,7 @@
     }
 
     // ============================================================
-    // ASK POPPIN - Via Cloudflare Worker
+    // ASK POPPIN
     // ============================================================
     async function askPoppin(question) {
         if (isProcessing) return;
@@ -1005,8 +1005,10 @@
         addChatMessage('ai', '', true);
 
         try {
-            const systemPrompt = `Anda adalah Poppin AI, asisten kesehatan yang ramah dan profesional. 
-Gunakan bahasa Indonesia yang hangat dan bersahabat.
+            const prompt = `Anda adalah Poppin AI, asisten kesehatan yang ramah dan profesional. 
+Pengguna bertanya: "${question}"
+
+Berikan jawaban yang informatif, akurat, dan mudah dipahami. Gunakan bahasa Indonesia yang hangat dan bersahabat.
 Format jawaban dengan struktur:
 - Gunakan **teks tebal** untuk kata kunci
 - Gunakan bullet points (•) untuk poin-poin penting
@@ -1014,15 +1016,9 @@ Format jawaban dengan struktur:
 - Pisahkan paragraf dengan jelas
 - Maksimal 200 kata.`;
 
-            const response = await callWorker(question, systemPrompt);
+            const response = await callGroq(prompt);
             removeTyping();
-            
-            // Cek apakah response mengandung error
-            if (response.error) {
-                addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${response.error}`);
-            } else {
-                addChatMessage('ai', response);
-            }
+            addChatMessage('ai', response);
         } catch (error) {
             removeTyping();
             addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${error.message}. Coba lagi nanti.`);
@@ -1033,7 +1029,7 @@ Format jawaban dengan struktur:
     }
 
     // ============================================================
-    // ANALYZE SINGLE - Via Cloudflare Worker
+    // ANALYZE SINGLE
     // ============================================================
     async function analyzeSingle(item) {
         if (isProcessing) return;
@@ -1042,10 +1038,8 @@ Format jawaban dengan struktur:
         addChatMessage('ai', '', true);
 
         try {
-            const systemPrompt = `Anda adalah Poppin AI, asisten kesehatan yang ramah dan profesional.
-Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata.`;
-
-            const userPrompt = `Analisis hasil pemeriksaan berikut:
+            const prompt = `Anda adalah Poppin AI, asisten kesehatan yang ramah dan profesional. 
+Analisis hasil pemeriksaan berikut:
 - Pemeriksaan: ${item.title}
 - Nilai: ${item.value} ${item.unit}
 - Rentang normal: ${item.normal}
@@ -1057,16 +1051,13 @@ Berikan analisis dengan struktur:
 • Poin 1
 • Poin 2
 • Poin 3
-**Kapan ke dokter:** (saran)`;
+**Kapan ke dokter:** (saran)
 
-            const response = await callWorker(userPrompt, systemPrompt);
+Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata.`;
+
+            const response = await callGroq(prompt);
             removeTyping();
-            
-            if (response.error) {
-                addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${response.error}`);
-            } else {
-                addChatMessage('ai', response);
-            }
+            addChatMessage('ai', response);
         } catch (error) {
             removeTyping();
             addChatMessage('ai', `⚠️ Maaf, terjadi kesalahan: ${error.message}. Coba lagi nanti.`);
@@ -1077,59 +1068,41 @@ Berikan analisis dengan struktur:
     }
 
     // ============================================================
-    // CALL CLOUDFLARE WORKER
+    // CALL GROQ API
     // ============================================================
-    async function callWorker(prompt, systemPrompt) {
-        try {
-            const response = await fetch(WORKER_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    messages: [
-                        {
-                            role: "system",
-                            content: systemPrompt || "Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat."
-                        },
-                        {
-                            role: "user",
-                            content: prompt
-                        }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 1024
-                })
-            });
+    async function callGroq(prompt) {
+        const response = await fetch(GROQ_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.1-8b-instant',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat. Format jawaban dengan markdown sederhana: gunakan **teks tebal** untuk penekanan, gunakan bullet points (•) untuk daftar, dan pisahkan paragraf dengan newline.'
+                    },
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 500,
+                top_p: 0.9,
+                stream: false
+            })
+        });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Worker Error Response:', errorText);
-                throw new Error(`Worker Error (${response.status}): ${errorText}`);
-            }
-
-            const data = await response.json();
-            console.log('Worker Response:', data);
-            
-            // Cek apakah response mengandung error
-            if (data.error) {
-                return { error: data.error };
-            }
-            
-            // Cek berbagai kemungkinan format response
-            const result = data.response || data.message || data.content || data.result || JSON.stringify(data);
-            
-            // Jika result adalah string, return langsung
-            if (typeof result === 'string') {
-                return result;
-            }
-            
-            // Jika result adalah object, stringify
-            return JSON.stringify(result);
-        } catch (error) {
-            console.error('Call Worker Error:', error);
-            throw error;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API Error (${response.status}): ${errorText}`);
         }
+
+        const data = await response.json();
+        return data.choices[0]?.message?.content || 'Maaf, tidak ada respons dari AI.';
     }
 
     // ============================================================
@@ -1149,57 +1122,65 @@ Berikan analisis dengan struktur:
     // ============================================================
     // ENTER KEY
     // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('chatInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendChat();
-            }
-        });
-
-        document.getElementById('modalInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                saveModal();
-            }
-        });
-
-        // ============================================================
-        // NAVIGASI
-        // ============================================================
-        const navItems = document.querySelectorAll('.nav-item');
-        const pages = document.querySelectorAll('.page');
-
-        function switchPage(pageId) {
-            pages.forEach(p => p.classList.remove('active-page'));
-            const target = document.getElementById(pageId);
-            if (target) target.classList.add('active-page');
-            navItems.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.page === pageId) btn.classList.add('active');
-            });
+    document.getElementById('chatInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendChat();
         }
-
-        navItems.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                if (this.getAttribute('href')) {
-                    return;
-                }
-                e.preventDefault();
-                const pageId = this.dataset.page;
-                if (pageId) switchPage(pageId);
-            });
-        });
-
-        // ============================================================
-        // INIT
-        // ============================================================
-        renderExamNav();
-
-        console.log('🧠 Poppin AI siap membantu!');
-        console.log('📊 Diagnosis data:', diagnosisData);
-        console.log('📜 History:', diagnosisHistory);
-        console.log('🌐 Worker endpoint:', WORKER_API_URL);
     });
+
+    document.getElementById('modalInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            saveModal();
+        }
+    });
+
+    // ============================================================
+    // NAVIGASI
+    // ============================================================
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page');
+
+    function switchPage(pageId) {
+        pages.forEach(p => p.classList.remove('active-page'));
+        const target = document.getElementById(pageId);
+        if (target) target.classList.add('active-page');
+        navItems.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.page === pageId) btn.classList.add('active');
+        });
+    }
+
+    navItems.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (this.getAttribute('href')) {
+                return;
+            }
+            e.preventDefault();
+            const pageId = this.dataset.page;
+            if (pageId) switchPage(pageId);
+        });
+    });
+
+    const currentPage = window.location.pathname.split('/').pop() || 'diagnosis.html';
+    const pageMap = {
+        'index.html': 'homePage',
+        'tracking.html': 'trackingPage',
+        'diagnosis.html': 'diagnosisPage',
+        'profil.html': 'profilPage'
+    };
+    const targetPage = pageMap[currentPage] || 'diagnosisPage';
+    switchPage(targetPage);
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    renderExamNav();
+
+    console.log('🧠 Poppin AI siap membantu!');
+    console.log('📊 Diagnosis data:', diagnosisData);
+    console.log('📜 History:', diagnosisHistory);
+    console.log('🤖 Model: llama-3.1-8b-instant');
 </script>
 </body>
 </html>
