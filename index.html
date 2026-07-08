@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>HealthPulse — Login & Daftar</title>
+    <title>HealthPulse — Splash Screen</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
@@ -16,20 +16,15 @@
 
         :root {
             --primary: #4F46E5;
-            --primary-light: #EEF2FF;
             --primary-dark: #4338CA;
             --primary-gradient: linear-gradient(135deg, #4F46E5, #7C3AED);
             --bg: #F8FAFC;
             --white: #FFFFFF;
             --text: #0F172A;
             --text-secondary: #64748B;
-            --text-light: #94A3B8;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-            --shadow-md: 0 4px 20px rgba(79, 70, 229, 0.12);
             --shadow-lg: 0 12px 40px rgba(79, 70, 229, 0.18);
             --radius: 20px;
             --radius-sm: 14px;
-            --radius-full: 50px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -43,18 +38,19 @@
             margin: 0;
         }
 
-        .auth-container {
+        .splash-container {
             max-width: 440px;
             width: 100%;
             background: var(--white);
             border-radius: var(--radius);
-            padding: 40px 32px 32px 32px;
+            padding: 48px 32px 40px 32px;
             box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
+            text-align: center;
         }
 
-        .auth-container::before {
+        .splash-container::before {
             content: '';
             position: absolute;
             top: -60%;
@@ -67,7 +63,7 @@
             pointer-events: none;
         }
 
-        .auth-container::after {
+        .splash-container::after {
             content: '';
             position: absolute;
             bottom: -40%;
@@ -80,434 +76,260 @@
             pointer-events: none;
         }
 
-        .auth-logo {
-            text-align: center;
+        .splash-logo {
             margin-bottom: 32px;
             position: relative;
             z-index: 1;
         }
 
-        .auth-logo .logo-icon {
-            width: 64px;
-            height: 64px;
+        .splash-logo .logo-icon {
+            width: 80px;
+            height: 80px;
             background: var(--primary-gradient);
-            border-radius: 20px;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px auto;
+            margin: 0 auto 20px auto;
             box-shadow: 0 8px 30px rgba(79, 70, 229, 0.25);
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        .auth-logo .logo-icon i {
-            font-size: 30px;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .splash-logo .logo-icon i {
+            font-size: 36px;
             color: white;
         }
 
-        .auth-logo h1 {
-            font-size: 24px;
-            font-weight: 800;
+        .splash-logo h1 {
+            font-size: 28px;
+            font-weight: 900;
             color: var(--text);
             letter-spacing: -0.5px;
+            margin-bottom: 4px;
         }
 
-        .auth-logo h1 span {
+        .splash-logo h1 span {
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .auth-logo p {
+        .splash-logo p {
             color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: 4px;
+            font-size: 15px;
             font-weight: 500;
         }
 
-        .auth-toggle {
-            display: flex;
-            background: var(--bg);
-            border-radius: var(--radius-full);
-            padding: 4px;
-            margin-bottom: 28px;
+        .splash-content {
             position: relative;
             z-index: 1;
         }
 
-        .auth-toggle button {
-            flex: 1;
-            padding: 10px 16px;
-            border: none;
-            background: transparent;
-            border-radius: var(--radius-full);
-            font-size: 14px;
-            font-weight: 600;
+        .splash-content .subtitle {
             color: var(--text-secondary);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .auth-toggle button.active {
-            background: var(--white);
-            color: var(--primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .auth-toggle button:active {
-            transform: scale(0.96);
-        }
-
-        .auth-form {
-            display: none;
-            flex-direction: column;
-            gap: 16px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .auth-form.active-form {
-            display: flex;
-            animation: slideUp 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-            0% { opacity: 0; transform: translateY(12px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            letter-spacing: 0.3px;
-        }
-
-        .form-group .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .form-group .input-wrapper .input-icon {
-            position: absolute;
-            left: 14px;
-            color: var(--text-light);
-            font-size: 16px;
-            transition: var(--transition);
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .form-group .input-wrapper input {
-            width: 100%;
-            padding: 14px 44px 14px 44px;
-            border: 2px solid #E2E8F0;
-            border-radius: var(--radius-sm);
             font-size: 14px;
-            font-weight: 500;
-            color: var(--text);
-            background: var(--bg);
-            transition: var(--transition);
-            outline: none;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            padding: 0 8px;
         }
 
-        .form-group .input-wrapper input:focus {
-            border-color: var(--primary);
-            background: var(--white);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
-        }
-
-        .form-group .input-wrapper input:focus ~ .input-icon {
+        .splash-content .subtitle i {
             color: var(--primary);
         }
 
-        .form-group .input-wrapper .toggle-password {
-            position: absolute;
-            right: 14px;
-            background: none;
-            border: none;
-            color: var(--text-light);
-            font-size: 16px;
-            cursor: pointer;
-            padding: 4px;
-            transition: var(--transition);
-            display: flex;
+        .whatsapp-button {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            z-index: 2;
-        }
-
-        .form-group .input-wrapper .toggle-password:hover {
-            color: var(--text-secondary);
-        }
-
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 4px 0 4px 0;
-        }
-
-        .form-options label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .form-options label input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-            border-radius: 4px;
-        }
-
-        .form-options a {
-            font-size: 12px;
-            color: var(--primary);
-            font-weight: 600;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .form-options a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .btn-primary {
-            padding: 14px;
-            background: var(--primary-gradient);
+            gap: 12px;
+            padding: 16px 40px;
+            background: #25D366;
             color: white;
             border: none;
             border-radius: var(--radius-sm);
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: var(--transition);
-            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.25);
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.30);
+            text-decoration: none;
+            width: 100%;
+            max-width: 320px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(79, 70, 229, 0.35);
+        .whatsapp-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(37, 211, 102, 0.40);
         }
 
-        .btn-primary:active {
+        .whatsapp-button:active {
             transform: scale(0.97);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .whatsapp-button i {
+            font-size: 24px;
         }
 
-        .btn-primary .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-
-        .btn-primary.loading .spinner {
-            display: inline-block;
-        }
-
-        .btn-primary.loading .btn-text {
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .divider {
+        .whatsapp-button .button-text {
             display: flex;
-            align-items: center;
-            gap: 16px;
-            margin: 8px 0 4px 0;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.2;
+        }
+
+        .whatsapp-button .button-text .main-text {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .whatsapp-button .button-text .sub-text {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.85;
+        }
+
+        .splash-footer {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #E2E8F0;
             position: relative;
             z-index: 1;
         }
 
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #E2E8F0;
-        }
-
-        .divider span {
+        .splash-footer p {
             font-size: 12px;
             color: var(--text-light);
             font-weight: 500;
-            white-space: nowrap;
         }
 
-        .social-buttons {
-            display: flex;
-            gap: 12px;
-            position: relative;
-            z-index: 1;
+        .splash-footer p i {
+            color: #EF4444;
+            margin: 0 4px;
         }
 
-        .social-buttons button {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #E2E8F0;
-            border-radius: var(--radius-sm);
-            background: var(--white);
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
+        /* Status konfirmasi */
+        .confirmation-badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-        }
-
-        .social-buttons button i {
-            font-size: 18px;
-        }
-
-        .social-buttons button:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .social-buttons button:active {
-            transform: scale(0.96);
-        }
-
-        .message {
-            padding: 12px 16px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 500;
-            display: none;
-            position: relative;
-            z-index: 1;
-        }
-
-        .message.error {
-            display: block;
-            background: #FEF2F2;
-            color: #DC2626;
-            border: 1px solid #FEE2E2;
-        }
-
-        .message.success {
-            display: block;
             background: #ECFDF5;
             color: #065F46;
-            border: 1px solid #D1FAE5;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
         }
 
-        .message .close-msg {
-            float: right;
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            font-size: 16px;
-            opacity: 0.6;
-            transition: var(--transition);
+        .confirmation-badge i {
+            color: #10B981;
         }
 
-        .message .close-msg:hover {
-            opacity: 1;
+        /* Animasi loading splash */
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .loading-dots span {
+            width: 10px;
+            height: 10px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            animation: dotBounce 1.4s ease-in-out infinite both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: scale(0.4); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
         }
 
         /* Responsif */
         @media (max-width: 480px) {
-            .auth-container {
-                padding: 28px 20px 24px 20px;
+            .splash-container {
+                padding: 32px 20px 28px 20px;
                 border-radius: 16px;
             }
 
-            .auth-logo .logo-icon {
-                width: 52px;
-                height: 52px;
+            .splash-logo .logo-icon {
+                width: 64px;
+                height: 64px;
             }
 
-            .auth-logo .logo-icon i {
+            .splash-logo .logo-icon i {
+                font-size: 28px;
+            }
+
+            .splash-logo h1 {
                 font-size: 24px;
             }
 
-            .auth-logo h1 {
+            .whatsapp-button {
+                padding: 14px 24px;
+                font-size: 14px;
+                max-width: 100%;
+            }
+
+            .whatsapp-button i {
                 font-size: 20px;
             }
 
-            .auth-toggle button {
-                font-size: 13px;
-                padding: 8px 12px;
-            }
-
-            .form-group .input-wrapper input {
-                padding: 12px 40px 12px 40px;
-                font-size: 13px;
-            }
-
-            .btn-primary {
-                padding: 12px;
+            .whatsapp-button .button-text .main-text {
                 font-size: 14px;
-            }
-
-            .social-buttons button {
-                padding: 10px;
-                font-size: 13px;
             }
         }
 
         @media (max-width: 360px) {
-            .auth-container {
-                padding: 20px 16px 20px 16px;
+            .splash-container {
+                padding: 24px 16px 20px 16px;
             }
 
-            .auth-logo p {
-                font-size: 12px;
+            .splash-logo .logo-icon {
+                width: 56px;
+                height: 56px;
             }
 
-            .form-options {
-                flex-direction: column;
+            .splash-logo .logo-icon i {
+                font-size: 24px;
+            }
+
+            .splash-logo h1 {
+                font-size: 20px;
+            }
+
+            .splash-logo p {
+                font-size: 13px;
+            }
+
+            .whatsapp-button {
+                padding: 12px 16px;
+                font-size: 13px;
                 gap: 8px;
-                align-items: flex-start;
             }
 
-            .social-buttons {
-                flex-direction: column;
+            .whatsapp-button i {
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="auth-container">
+<div class="splash-container">
     <!-- Logo -->
-    <div class="auth-logo">
+    <div class="splash-logo">
         <div class="logo-icon">
             <i class="fas fa-heartbeat"></i>
         </div>
@@ -515,342 +337,64 @@
         <p>Jaga kesehatanmu, pantau setiap hari</p>
     </div>
 
-    <!-- Toggle Login / Daftar -->
-    <div class="auth-toggle">
-        <button id="loginTab" class="active">Masuk</button>
-        <button id="registerTab">Daftar</button>
+    <div class="splash-content">
+        <!-- Loading animation -->
+        <div class="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Badge konfirmasi -->
+        <div class="confirmation-badge">
+            <i class="fas fa-check-circle"></i>
+            Menunggu Konfirmasi Pihak Terkait
+        </div>
+
+        <p class="subtitle">
+            <i class="fas fa-info-circle"></i> 
+            Untuk melanjutkan, silakan konfirmasi ke pihak yang bersangkutan melalui WhatsApp
+        </p>
+
+        <!-- Tombol WhatsApp -->
+        <a href="https://wa.me/6285624250896?text=Halo%20saya%20ingin%20konfirmasi%20terkait%20HealthPulse" 
+           target="_blank" 
+           class="whatsapp-button">
+            <i class="fab fa-whatsapp"></i>
+            <span class="button-text">
+                <span class="main-text">Konfirmasi via WhatsApp</span>
+                <span class="sub-text">+62 856-2425-0896</span>
+            </span>
+        </a>
     </div>
 
-    <!-- Message -->
-    <div id="message" class="message">
-        <button class="close-msg" onclick="this.parentElement.style.display='none'">&times;</button>
-        <span id="messageText"></span>
+    <div class="splash-footer">
+        <p>
+            <i class="fas fa-heart"></i> HealthPulse — Tunggu konfirmasi dari pihak terkait
+        </p>
     </div>
-
-    <!-- Form Login -->
-    <form id="loginForm" class="auth-form active-form">
-        <div class="form-group">
-            <label>Email</label>
-            <div class="input-wrapper">
-                <input type="email" id="loginEmail" placeholder="Masukkan email" required />
-                <i class="fas fa-envelope input-icon"></i>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Kata Sandi</label>
-            <div class="input-wrapper">
-                <input type="password" id="loginPassword" placeholder="Masukkan kata sandi" required />
-                <i class="fas fa-lock input-icon"></i>
-                <button type="button" class="toggle-password" onclick="togglePassword(this)">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </div>
-        </div>
-        <div class="form-options">
-            <label>
-                <input type="checkbox" checked /> Ingat saya
-            </label>
-            <a href="#">Lupa sandi?</a>
-        </div>
-        <button type="submit" class="btn-primary" id="loginBtn">
-            <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Masuk</span>
-            <span class="spinner"></span>
-        </button>
-        <div class="divider"><span>atau</span></div>
-        <div class="social-buttons">
-            <button type="button" onclick="socialLogin('google')"><i class="fab fa-google"></i> Google</button>
-        </div>
-    </form>
-
-    <!-- Form Daftar -->
-    <form id="registerForm" class="auth-form">
-        <div class="form-group">
-            <label>Nama Lengkap</label>
-            <div class="input-wrapper">
-                <input type="text" id="registerName" placeholder="Masukkan nama lengkap" required />
-                <i class="fas fa-user input-icon"></i>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <div class="input-wrapper">
-                <input type="email" id="registerEmail" placeholder="Masukkan email" required />
-                <i class="fas fa-envelope input-icon"></i>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Kata Sandi</label>
-            <div class="input-wrapper">
-                <input type="password" id="registerPassword" placeholder="Minimal 6 karakter" required />
-                <i class="fas fa-lock input-icon"></i>
-                <button type="button" class="toggle-password" onclick="togglePassword(this)">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Konfirmasi Sandi</label>
-            <div class="input-wrapper">
-                <input type="password" id="registerConfirm" placeholder="Ketik ulang sandi" required />
-                <i class="fas fa-check-circle input-icon"></i>
-                <button type="button" class="toggle-password" onclick="togglePassword(this)">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </div>
-        </div>
-        <button type="submit" class="btn-primary" id="registerBtn">
-            <span class="btn-text"><i class="fas fa-user-plus"></i> Daftar</span>
-            <span class="spinner"></span>
-        </button>
-        <div class="divider"><span>atau</span></div>
-        <div class="social-buttons">
-            <button type="button" onclick="socialLogin('google')"><i class="fab fa-google"></i> Google</button>
-        </div>
-    </form>
 </div>
 
-<!-- Firebase SDK -->
-<script type="importmap">
-    {
-        "imports": {
-            "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js"
-        }
-    }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import {
-        getAuth,
-        signInWithEmailAndPassword,
-        createUserWithEmailAndPassword,
-        signInWithPopup,
-        GoogleAuthProvider,
-        updateProfile,
-        onAuthStateChanged
-    } from "firebase/auth";
-
-    // Konfigurasi Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyA3a3O3_khcx66HwD7hfhSwRrknliFbKMw",
-        authDomain: "healtcare-d4e63.firebaseapp.com",
-        projectId: "healtcare-d4e63",
-        storageBucket: "healtcare-d4e63.firebasestorage.app",
-        messagingSenderId: "1044472132716",
-        appId: "1:1044472132716:web:09f3ab5fc5650e01709449",
-        measurementId: "G-FKED8092XB"
-    };
-
-    // Inisialisasi Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // DOM Elements
-    const loginTab = document.getElementById('loginTab');
-    const registerTab = document.getElementById('registerTab');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-
-    const loginEmail = document.getElementById('loginEmail');
-    const loginPassword = document.getElementById('loginPassword');
-    const registerName = document.getElementById('registerName');
-    const registerEmail = document.getElementById('registerEmail');
-    const registerPassword = document.getElementById('registerPassword');
-    const registerConfirm = document.getElementById('registerConfirm');
-
-    const messageEl = document.getElementById('message');
-    const messageText = document.getElementById('messageText');
-
-    // Toggle Form
-    function toggleForm(form) {
-        loginForm.classList.remove('active-form');
-        registerForm.classList.remove('active-form');
-        loginTab.classList.remove('active');
-        registerTab.classList.remove('active');
-
-        if (form === 'login') {
-            loginForm.classList.add('active-form');
-            loginTab.classList.add('active');
-        } else {
-            registerForm.classList.add('active-form');
-            registerTab.classList.add('active');
-        }
-        hideMessage();
-    }
-
-    loginTab.addEventListener('click', () => toggleForm('login'));
-    registerTab.addEventListener('click', () => toggleForm('register'));
-
-    // Show Message
-    function showMessage(text, type = 'error') {
-        messageEl.className = `message ${type}`;
-        messageText.textContent = text;
-        messageEl.style.display = 'block';
-    }
-
-    function hideMessage() {
-        messageEl.style.display = 'none';
-    }
-
-    // Toggle Password Visibility
-    window.togglePassword = function(btn) {
-        const input = btn.parentElement.querySelector('input');
-        const icon = btn.querySelector('i');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.className = 'fas fa-eye-slash';
-        } else {
-            input.type = 'password';
-            icon.className = 'fas fa-eye';
-        }
-    };
-
-    // Set Loading State
-    function setLoading(btn, loading) {
-        if (loading) {
-            btn.classList.add('loading');
-            btn.disabled = true;
-        } else {
-            btn.classList.remove('loading');
-            btn.disabled = false;
-        }
-    }
-
-    // --- LOGIN ---
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideMessage();
-
-        const email = loginEmail.value.trim();
-        const password = loginPassword.value.trim();
-
-        if (!email || !password) {
-            showMessage('Mohon isi email dan kata sandi.', 'error');
-            return;
+<!-- Script sederhana untuk efek -->
+<script>
+    // Saat halaman dimuat, efek loading dots berjalan otomatis
+    document.addEventListener('DOMContentLoaded', function() {
+        // Efek tambahan: badge berkedip pelan
+        const badge = document.querySelector('.confirmation-badge');
+        if (badge) {
+            setInterval(() => {
+                badge.style.opacity = badge.style.opacity === '0.6' ? '1' : '0.6';
+            }, 1500);
         }
 
-        setLoading(loginBtn, true);
-
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            showMessage('Login berhasil! Mengarahkan...', 'success');
-            setTimeout(() => {
-                window.location.href = 'home.html';
-            }, 1000);
-        } catch (error) {
-            let msg = 'Gagal login. Periksa email dan sandi.';
-            if (error.code === 'auth/user-not-found') msg = 'Email tidak terdaftar.';
-            else if (error.code === 'auth/wrong-password') msg = 'Kata sandi salah.';
-            else if (error.code === 'auth/invalid-email') msg = 'Format email tidak valid.';
-            else if (error.code === 'auth/too-many-requests') msg = 'Terlalu banyak percobaan. Coba lagi nanti.';
-            showMessage(msg, 'error');
-        }
-
-        setLoading(loginBtn, false);
+        // Log untuk developer
+        console.log('HealthPulse Splash Screen - Menunggu konfirmasi');
+        console.log('Nomor WhatsApp: +62 856-2425-0896');
     });
 
-    // --- REGISTER ---
-    registerForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideMessage();
-
-        const name = registerName.value.trim();
-        const email = registerEmail.value.trim();
-        const password = registerPassword.value.trim();
-        const confirm = registerConfirm.value.trim();
-
-        if (!name || !email || !password || !confirm) {
-            showMessage('Semua field wajib diisi.', 'error');
-            return;
-        }
-
-        if (password.length < 6) {
-            showMessage('Kata sandi minimal 6 karakter.', 'error');
-            return;
-        }
-
-        if (password !== confirm) {
-            showMessage('Konfirmasi sandi tidak cocok.', 'error');
-            return;
-        }
-
-        setLoading(registerBtn, true);
-
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await updateProfile(userCredential.user, { displayName: name });
-            showMessage('Akun berhasil dibuat! Mengarahkan...', 'success');
-            setTimeout(() => {
-                window.location.href = 'home.html';
-            }, 1000);
-        } catch (error) {
-            let msg = 'Gagal mendaftar.';
-            if (error.code === 'auth/email-already-in-use') msg = 'Email sudah terdaftar.';
-            else if (error.code === 'auth/invalid-email') msg = 'Format email tidak valid.';
-            else if (error.code === 'auth/weak-password') msg = 'Kata sandi terlalu lemah.';
-            showMessage(msg, 'error');
-        }
-
-        setLoading(registerBtn, false);
-    });
-
-    // --- SOCIAL LOGIN (HANYA GOOGLE) ---
-    window.socialLogin = async function(providerType) {
-        hideMessage();
-        
-        if (providerType !== 'google') {
-            showMessage('Hanya login dengan Google yang tersedia.', 'error');
-            return;
-        }
-        
-        const provider = new GoogleAuthProvider();
-
-        const btns = document.querySelectorAll('.social-buttons button');
-        let targetBtn = null;
-        btns.forEach(btn => {
-            if (btn.textContent.toLowerCase().includes('google')) {
-                targetBtn = btn;
-            }
-        });
-
-        if (targetBtn) {
-            targetBtn.disabled = true;
-            targetBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-        }
-
-        try {
-            const result = await signInWithPopup(auth, provider);
-            showMessage('Login dengan Google berhasil!', 'success');
-            setTimeout(() => {
-                window.location.href = 'home.html';
-            }, 1000);
-        } catch (error) {
-            let msg = 'Gagal login dengan Google.';
-            if (error.code === 'auth/popup-closed-by-user') {
-                msg = 'Popup ditutup. Silakan coba lagi.';
-            } else if (error.code === 'auth/account-exists-with-different-credential') {
-                msg = 'Akun sudah terdaftar dengan metode lain.';
-            }
-            showMessage(msg, 'error');
-        }
-
-        if (targetBtn) {
-            targetBtn.disabled = false;
-            targetBtn.innerHTML = '<i class="fab fa-google"></i> Google';
-        }
-    };
-
-    // --- CEK STATUS AUTH ---
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const currentPath = window.location.pathname;
-            if (currentPath.includes('login.html') || currentPath === '/' || currentPath === '') {
-                window.location.href = 'home.html';
-            }
-        }
+    // Fungsi untuk tracking klik tombol (opsional)
+    document.querySelector('.whatsapp-button')?.addEventListener('click', function() {
+        console.log('Tombol WhatsApp diklik - Konfirmasi ke +62 856-2425-0896');
     });
 </script>
 
