@@ -791,7 +791,10 @@
     // ============================================================
     // KONFIGURASI GROQ AI
     // ============================================================
-    const WORKER_URL = "https://nayra-ai.astrob379.workers.dev";
+    const GROQ_API_KEY = "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";
+    const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+    const GROQ_MODEL = "openai/gpt-oss-20b";
+
     // ============================================================
     // DATA DIAGNOSIS
     // ============================================================
@@ -1066,51 +1069,57 @@ Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata
     }
 
     // ============================================================
-    // CALL GROQ API
+    // CALL GROQ API — gpt-oss-20b
     // ============================================================
-   
-            async function callGroq(prompt) {
-            const response = await fetch(WORKER_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    messages: [
-                        {
-                            role: "system",
-                            content: "Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat."
-                        },
-                        {
-                            role: "user",
-                            content: prompt
-                        }
-                    ]
-                })
-            });
-        
-            const data = await response.json();
-        
-            if (!response.ok) {
-                throw new Error(data.error || "Worker Error");
-            }
-        
-            return data.choices?.[0]?.message?.content || "Tidak ada respons dari AI.";
+    async function callGroq(prompt) {
+        const response = await fetch(GROQ_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: GROQ_MODEL,
+                messages: [
+                    {
+                        role: "system",
+                        content: "Anda adalah Poppin AI, asisten kesehatan yang ramah, hangat, dan profesional. Berikan jawaban yang jelas, akurat, dan mudah dipahami oleh pasien. Gunakan bahasa Indonesia yang baik dan bersahabat."
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 1024,
+                top_p: 1,
+                stream: false
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            const msg = data?.error?.message || data?.error || `HTTP ${response.status}`;
+            throw new Error(msg);
         }
-            
-        // ============================================================
-        // CLEAR CHAT
-        // ============================================================
-        function clearChat() {
-            const container = document.getElementById('chatMessages');
-            container.innerHTML = `
-                <div class="chat-msg ai">
-                    🧹 Chat dibersihkan. Saya siap membantu Anda!
-                    <span class="msg-time">Sekarang</span>
-                </div>
-            `;
-            removeTyping();
-        }
+
+        return data.choices?.[0]?.message?.content || "Tidak ada respons dari AI.";
+    }
+
+    // ============================================================
+    // CLEAR CHAT
+    // ============================================================
+    function clearChat() {
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = `
+            <div class="chat-msg ai">
+                🧹 Chat dibersihkan. Saya siap membantu Anda!
+                <span class="msg-time">Sekarang</span>
+            </div>
+        `;
+        removeTyping();
+    }
 
     // ============================================================
     // ENTER KEY
@@ -1173,7 +1182,7 @@ Jawab dengan gaya yang hangat, informatif, dan mudah dipahami. Maksimal 120 kata
     console.log('🧠 Poppin AI siap membantu!');
     console.log('📊 Diagnosis data:', diagnosisData);
     console.log('📜 History:', diagnosisHistory);
-    console.log('🤖 Model: llama-3.1-8b-instant');
+    console.log('🤖 Model:', GROQ_MODEL);
 </script>
 </body>
 </html>
