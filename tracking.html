@@ -745,10 +745,11 @@
 
 <script>
     // ============================================================
-    // KONFIGURASI GROQ AI
+    // KONFIGURASI GROQ AI — gpt-oss-20b
     // ============================================================
-    const GROQ_API_KEY = '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';
+    const GROQ_API_KEY = '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';
     const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+    const GROQ_MODEL = 'openai/gpt-oss-20b';
 
     // ============================================================
     // DATA PEMERIKSAAN
@@ -1043,7 +1044,7 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
     }
 
     // ============================================================
-    // CALL GROQ API
+    // CALL GROQ API — gpt-oss-20b
     // ============================================================
     async function callGroq(prompt) {
         const response = await fetch(GROQ_API_URL, {
@@ -1053,7 +1054,7 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
                 'Authorization': `Bearer ${GROQ_API_KEY}`
             },
             body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
+                model: GROQ_MODEL,
                 messages: [
                     {
                         role: 'system',
@@ -1065,8 +1066,8 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
                     }
                 ],
                 temperature: 0.7,
-                max_tokens: 900,
-                top_p: 0.9,
+                max_tokens: 1024,
+                top_p: 1,
                 stream: false
             })
         });
@@ -1161,7 +1162,7 @@ Gunakan bahasa Indonesia yang hangat, mudah dipahami, dan informatif. Berikan pe
     updateProfileSummary();
 
     console.log('📊 Tracking HealthPulse siap!');
-    console.log('🤖 Model: llama-3.1-8b-instant');
+    console.log('🤖 Model:', GROQ_MODEL);
     console.log('👤 Data diri telah ditambahkan');
 </script>
 </body>
